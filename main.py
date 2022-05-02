@@ -14,7 +14,7 @@ casinoGames = ["Blackjack", "Poker", "Dice"]
 WINDOOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 BACKGROUND_COLOR = "#1d1d1d"
-DEBUG = False
+DEBUG = True
 
 
 # Initalize the client class ### Maybe allowing for multiplayer? only lan with ports?
@@ -262,7 +262,7 @@ class Client:
         self.sideBarFrame.columnconfigure(1, weight=1)
         self.sideBarFrame.columnconfigure(2, weight=1)
         self.sideBarFrame.columnconfigure(3, weight=0)
-        self.sideBarFrame.rowconfigure(2, weight=1)
+        self.sideBarFrame.rowconfigure(3, weight=1)
 
 
         userNameLabel = tkinter.Label(self.sideBarFrame, text=f'Welcome, \n{self.userData["username"]}',font=("Helvetica", 12), bg=BACKGROUND_COLOR, fg='#fff')
@@ -275,15 +275,14 @@ class Client:
 
 
 
-        chipCounter = tkinter.Label(self.sideBarFrame, text=f'Chips: {self.userData["balance"]}',)
+        chipCounter = tkinter.Label(self.sideBarFrame, text=f'Chips: {self.userData["balance"]}', font=("Helvetica", 12))
         chipCounter.grid(row=2, column=0, padx=20, columnspan=3, sticky='new', pady=10)
 
         
+        TipsFrame = tkinter.LabelFrame(self.sideBarFrame, text="Tips", labelanchor="nw", bd=4, font=("Helvetica", 12))
+        TipsFrame.grid(row=3, column=0, columnspan=3, sticky='news', pady=10, padx=20)
 
-
-
-
-
+        
 
 
 
@@ -296,7 +295,7 @@ class Client:
         # Quit Button Creation and placement
 
         QuitButton = tkinter.Button(self.sideBarFrame, text="Quit", command=self.on_closing, )
-        QuitButton.grid(row=3, column=0, sticky='sew', padx=10, pady=10, columnspan=3)
+        QuitButton.grid(row=4, column=0, sticky='sew', padx=10, pady=10, columnspan=3)
 
 
 
