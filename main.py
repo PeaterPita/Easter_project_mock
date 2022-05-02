@@ -35,6 +35,94 @@ class Client:
             self.root.destroy()
 
 
+
+    def settings(self):
+
+
+        # Creating the settings Modal
+
+        self.settingsModal = tkinter.Toplevel(self.root)
+        self.settingsModal.title("Settings")
+        self.settingsModal.geometry('460x340')
+        self.settingsModal.resizable(False, False)
+        self.settingsModal.configure(background=BACKGROUND_COLOR)
+        self.settingsModal.wm_attributes("-topmost", 0)
+
+
+        # Func to find what widget has focus, and set it apart if its a text box.
+
+        def focus(event):
+            widget = self.settingsModal.focus_get()
+            widget.configure(relief="solid", borderwidth=2, bg='#fff', fg='#000')
+            for child in self.settingsModal.winfo_children():
+                if child != widget and child.winfo_class() == "Entry":
+                    child.configure(relief="groove", borderwidth=1, bg=BACKGROUND_COLOR, fg='#fff')
+
+
+        # Creating and positioning the 2 sub groups of settings: Cosmetic and Passwords
+
+        cosmeticFrame = tkinter.LabelFrame(self.settingsModal, text="Cosmetic", labelanchor="nw", bg=BACKGROUND_COLOR, fg='#fff')
+        cosmeticFrame.grid(row=0, column=0, sticky='news', pady=10, padx=20, columnspan=2)
+
+        changePasswordFrame = tkinter.LabelFrame(self.settingsModal, text="Passwords", labelanchor="nw", bg=BACKGROUND_COLOR, fg='#fff')
+        changePasswordFrame.grid(row=1, column=0, sticky='news', pady=10, padx=20, columnspan=2)
+
+
+        # Creating and positioning the Current Username label, entry and placeholder
+
+        currentUsername = tkinter.Label(cosmeticFrame, text='Username: ', bg=BACKGROUND_COLOR, fg='#fff')
+        currentUsername.grid(row=0, column=0, sticky='w', padx=10, pady=10)
+
+        currentUsernameEntry = tkinter.Entry(cosmeticFrame, width=20, bg=BACKGROUND_COLOR, fg='#fff')
+        currentUsernameEntry.grid(row=0, column=1, sticky='w', padx=10, pady=10)
+
+        currentUsernameEntry.delete(0, tkinter.END)
+        currentUsernameEntry.insert(0, self.userData['username'])
+
+
+        # Creating and positiiing the confrim and new password labels and entries 
+
+        confirmPassword = tkinter.Label(changePasswordFrame, text='Confirm Password: ', bg=BACKGROUND_COLOR, fg='#fff')
+        confirmPassword.grid(row=0, column=0, sticky='w', padx=10, pady=10)
+
+        confirmPasswordEntry = tkinter.Entry(changePasswordFrame, width=20, bg=BACKGROUND_COLOR, fg='#fff')
+        confirmPasswordEntry.grid(row=0, column=1, sticky='w', padx=10, pady=10)
+
+        newPassword = tkinter.Label(changePasswordFrame, text='New Password: ', bg=BACKGROUND_COLOR, fg='#fff')
+        newPassword.grid(row=1, column=0, sticky='w', padx=10, pady=10)
+
+        newPasswordEntry = tkinter.Entry(changePasswordFrame, width=20, bg=BACKGROUND_COLOR, fg='#fff')
+        newPasswordEntry.grid(row=1, column=1, sticky='w', padx=10, pady=10)
+
+
+        # Creating and positioning the save and discard buttons
+
+        saveChanges = tkinter.Button(self.settingsModal, text="Save Changes", bg=BACKGROUND_COLOR, fg='#fff')
+        saveChanges.grid(row=5, column=0, sticky='news', pady=10, padx=20)
+
+        discardChanges = tkinter.Button(self.settingsModal, text="Discard Changes", bg=BACKGROUND_COLOR, fg='#fff')
+        discardChanges.grid(row=5, column=1, sticky='news', pady=10, padx=20)
+
+
+        # FIXME: Tempory warning
+
+        warning = tkinter.Label(self.settingsModal, text="Warning: Settings do not current work", bg='red', fg='#fff', font=("Helvetica", 10))
+        warning.grid(row=4, column=0, sticky='news', pady=10, padx=20, columnspan=2)
+
+
+        # settingsModal row and col config
+
+        self.settingsModal.columnconfigure(0, weight=1)
+        self.settingsModal.rowconfigure(4, weight=1)
+
+
+        # Binding the focus event to mouse click.
+
+        self.settingsModal.bind_all("<Button-1>", lambda event: focus(event))
+
+
+
+
     # Auth Manages the login and registration of the user as well as the modal.
 
     def auth(self):
@@ -269,7 +357,7 @@ class Client:
         userNameLabel.grid(row=0, column=0, sticky='new', columnspan=3,pady=20, padx=20)
 
 
-        profilePic = tkinter.Button(self.sideBarFrame ,image=pic, command=lambda: print(self.userData['username']), pady=10,)
+        profilePic = tkinter.Button(self.sideBarFrame ,image=pic, command=lambda: self.settings(), pady=10,)
         profilePic.image = pic
         profilePic.grid(row=1, column=1, sticky='n',)
 
