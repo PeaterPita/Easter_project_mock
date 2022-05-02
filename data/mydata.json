@@ -11,13 +11,13 @@
     "username": "bob",
     "password": "123",
     "balance": 100,
-    "ProfilePicture": "images/MMLogo2.png"
+    "ProfilePicture": "images/default.jpg"
   },
   {
     "UserID": 2,
     "username": "7",
     "password": "7",
     "balance": 100,
-    "ProfilePicture": "images/MMLogo2.png"
+    "ProfilePicture": "images/default.jpg"
   }
 ]

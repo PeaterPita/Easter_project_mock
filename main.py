@@ -14,7 +14,7 @@ casinoGames = ["Blackjack", "Poker", "Dice"]
 WINDOOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 BACKGROUND_COLOR = "#1d1d1d"
-DEBUG = True
+DEBUG = False
 
 
 # Initalize the client class ### Maybe allowing for multiplayer? only lan with ports?
@@ -125,7 +125,7 @@ class Client:
                                         "username": username,
                                         "password": password,
                                         "balance": 100,
-                                        "ProfilePicture": "images/MMLogo2.png"
+                                        "ProfilePicture": "images/default.jpg"
                                         })
                         f.seek(0)
                         json.dump(data, f)
@@ -234,6 +234,9 @@ class Client:
     # Function to create the main menu.
 
     def mainMenu(self):
+        profilePic = Image.open(self.userData['ProfilePicture'])
+        pic = profilePic.resize((75,75), Image.ANTIALIAS)
+        pic = ImageTk.PhotoImage(pic)
         # Creation and placement of the sidebar frame.
 
         self.sideBarFrame = tkinter.Frame(self.root, height=WINDOW_HEIGHT,relief='sunken', borderwidth=1) #maybe width 200
@@ -249,20 +252,51 @@ class Client:
         # Column and Row config for the main screen
 
         self.root.columnconfigure(0, weight=1)
-        self.root.columnconfigure(1, weight=5)
+        self.root.columnconfigure(1, weight=8)
         self.root.rowconfigure(0, weight=1)
 
         
         # Column and Row config for the sidebar
 
         self.sideBarFrame.columnconfigure(0, weight=1)
-        self.sideBarFrame.rowconfigure(0, weight=1)
+        self.sideBarFrame.columnconfigure(1, weight=1)
+        self.sideBarFrame.columnconfigure(2, weight=1)
+        self.sideBarFrame.columnconfigure(3, weight=0)
+        self.sideBarFrame.rowconfigure(2, weight=1)
+
+
+        userNameLabel = tkinter.Label(self.sideBarFrame, text=f'Welcome, \n{self.userData["username"]}',font=("Helvetica", 12), bg=BACKGROUND_COLOR, fg='#fff')
+        userNameLabel.grid(row=0, column=0, sticky='new', columnspan=3,pady=20, padx=20)
+
+
+        profilePic = tkinter.Button(self.sideBarFrame ,image=pic, command=lambda: print(self.userData['username']), pady=10,)
+        profilePic.image = pic
+        profilePic.grid(row=1, column=1, sticky='n',)
+
+
+
+        chipCounter = tkinter.Label(self.sideBarFrame, text=f'Chips: {self.userData["balance"]}',)
+        chipCounter.grid(row=2, column=0, padx=20, columnspan=3, sticky='new', pady=10)
 
         
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         # Quit Button Creation and placement
 
-        QuitButton = tkinter.Button(self.sideBarFrame, text="Quit", command=self.on_closing)
-        QuitButton.grid(row=0, column=0, sticky='sew', padx=10, pady=10, columnspan=3)
+        QuitButton = tkinter.Button(self.sideBarFrame, text="Quit", command=self.on_closing, )
+        QuitButton.grid(row=3, column=0, sticky='sew', padx=10, pady=10, columnspan=3)
 
 
 
@@ -307,7 +341,7 @@ class Client:
         if not DEBUG:
             self.auth()
         else:
-            self.userData = {'username': 'test', 'password': 'test', "balance": 999, "ProfilePicture": "images/MMLogo2.png"}
+            self.userData = {'username': 'testing', 'password': 'test', "balance": 999, "ProfilePicture": "images/MMLogo2.png"}
             self.mainMenu()
 
         self.root.mainloop()
@@ -318,5 +352,5 @@ class Client:
 # Just making test client and running it.
 #TODO: Could be turned into multiplayer. would need to move processing to server script.
 
-g = Client()
-g.run()
+h = Client()
+h.run()
