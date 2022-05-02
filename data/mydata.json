@@ -1,0 +1,23 @@
+[
+  {
+    "UserID": 0,
+    "username": "admin",
+    "password": "admin",
+    "balance": 999,
+    "ProfilePicture": "images/MMLogo2.png"
+  },
+  {
+    "UserID": 1,
+    "username": "bob",
+    "password": "123",
+    "balance": 100,
+    "ProfilePicture": "images/MMLogo2.png"
+  },
+  {
+    "UserID": 2,
+    "username": "7",
+    "password": "7",
+    "balance": 100,
+    "ProfilePicture": "images/MMLogo2.png"
+  }
+]
