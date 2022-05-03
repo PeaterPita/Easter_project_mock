@@ -6,6 +6,7 @@ import json
 from PIL import Image, ImageTk
 from pathlib import Path
 import time
+from tkinter.filedialog import askopenfilename
 
 
 # Constants
@@ -33,7 +34,15 @@ class Client:
         self.root.configure(background=BACKGROUND_COLOR)
 
 
-
+    def getProfilePic(self):
+        try:
+            profilePic = Image.open(self.userData['ProfilePicture'])
+        except:
+            print("Something went wrong when trying to get the profile picture. Restorted back to default")
+            profilePic = Image.open("images/default.jpg")
+        pic = profilePic.resize((75,75), Image.ANTIALIAS)
+        pic = ImageTk.PhotoImage(pic)
+        return pic
 
     def validatePassword(self, password):
         if len(password) < 6:
@@ -55,6 +64,21 @@ class Client:
             f.seek(0)
             json.dump(data, f, indent=4)
             f.truncate()
+
+
+            try:
+                self.userNameLabel.config(text=f'Welcome, \n {self.userData["username"] }' )
+
+
+                # Try to change man menu profile pic.
+
+                pic = self.getProfilePic()
+                self.profilePic.config(image=pic)
+                self.profilePic.image = pic
+            
+            except Exception as e:
+                print(e)
+
 
     
     def warning(self, parent, message, bg='red', fg='#fff', fontsize=8, row=5, sticky='ew'):
@@ -85,7 +109,10 @@ class Client:
         self.settingsModal.configure(background=BACKGROUND_COLOR)
         self.settingsModal.wm_attributes("-topmost", 0)
 
-
+        def changePic():
+            newPic  = askopenfilename(initialdir="images", title="Select Profile Picture", filetypes=(("png files", "*.png"), ("all files", "*.*")))
+            self.userData['ProfilePicture'] = newPic
+            self.saveChanges()
         
 
 
@@ -121,6 +148,13 @@ class Client:
         currentUsernameEntry.insert(0, self.userData['username'])
 
 
+        profilePicSelector = tkinter.Button(cosmeticFrame, text="Change Profile Picture", bg=BACKGROUND_COLOR, fg='#fff', command= lambda: changePic())
+        profilePicSelector.grid(row=1, column=0, sticky='w', padx=10, pady=10)
+
+
+
+
+
         # Creating and positiiing the confrim and new password labels and entries 
 
         confirmPassword = tkinter.Label(changePasswordFrame, text='Confirm Password: ', bg=BACKGROUND_COLOR, fg='#fff')
@@ -152,7 +186,9 @@ class Client:
         
             self.userData['username'] = currentUsernameEntry.get()
 
-            
+            if not confirmPasswordEntry.get() and not newPasswordEntry.get():
+                self.saveChanges()
+                self.settingsModal.destroy()
 
 
             if confirmPasswordEntry.get() and not newPasswordEntry.get():
@@ -161,6 +197,7 @@ class Client:
             elif newPasswordEntry.get() and not confirmPasswordEntry.get():
                 self.warning(self.settingsModal, "You must confirm your password before changing it")
                 return
+
             else:
                 if confirmPasswordEntry.get() == self.userData['password']:
                     valResult = self.validatePassword(newPasswordEntry.get())
@@ -271,10 +308,14 @@ class Client:
         # Func to create a new user, and add it to the data file, if all fields are valid and not taken.
 
         def createAccount(username, password, confirmPassword):
+            valResult = self.validatePassword(password)
             if not username or not password or not confirmPassword:
                 self.warning(self.logInModal,"Please fill in all fields")
             elif password != confirmPassword:
                 self.warning(self.logInModal,"Passwords do not match")
+
+            elif not valResult[0]:
+                self.warning(self.logInModal, valResult[1])
             else:
                 with open("data\mydata.json", 'r') as f:
                     for user in json.load(f):
@@ -398,9 +439,8 @@ class Client:
     # Function to create the main menu.
 
     def mainMenu(self):
-        profilePic = Image.open(self.userData['ProfilePicture'])
-        pic = profilePic.resize((75,75), Image.ANTIALIAS)
-        pic = ImageTk.PhotoImage(pic)
+        pic = self.getProfilePic()
+        
         # Creation and placement of the sidebar frame.
 
         self.sideBarFrame = tkinter.Frame(self.root, height=WINDOW_HEIGHT,relief='sunken', borderwidth=1) #maybe width 200
@@ -429,18 +469,18 @@ class Client:
         self.sideBarFrame.rowconfigure(3, weight=1)
 
 
-        userNameLabel = tkinter.Label(self.sideBarFrame, text=f'Welcome, \n{self.userData["username"]}',font=("Helvetica", 12), bg=BACKGROUND_COLOR, fg='#fff')
-        userNameLabel.grid(row=0, column=0, sticky='new', columnspan=3,pady=20, padx=20)
+        self.userNameLabel = tkinter.Label(self.sideBarFrame, text=f'Welcome, \n{self.userData["username"]}',font=("Helvetica", 12), bg=BACKGROUND_COLOR, fg='#fff')
+        self.userNameLabel.grid(row=0, column=0, sticky='new', columnspan=3,pady=20, padx=20)
 
 
-        profilePic = tkinter.Button(self.sideBarFrame ,image=pic, command=lambda: self.settings(), pady=10,)
-        profilePic.image = pic
-        profilePic.grid(row=1, column=1, sticky='n',)
+        self.profilePic = tkinter.Button(self.sideBarFrame ,image=pic, command=lambda: self.settings(), pady=10,)
+        self.profilePic.image = pic
+        self.profilePic.grid(row=1, column=1, sticky='n',)
 
 
 
-        chipCounter = tkinter.Label(self.sideBarFrame, text=f'Chips: {self.userData["balance"]}', font=("Helvetica", 12))
-        chipCounter.grid(row=2, column=0, padx=20, columnspan=3, sticky='new', pady=10)
+        self.chipCounter = tkinter.Label(self.sideBarFrame, text=f'Chips: {self.userData["balance"]}', font=("Helvetica", 12))
+        self.chipCounter.grid(row=2, column=0, padx=20, columnspan=3, sticky='new', pady=10)
 
         
         TipsFrame = tkinter.LabelFrame(self.sideBarFrame, text="Tips", labelanchor="nw", bd=4, font=("Helvetica", 12))
@@ -494,7 +534,7 @@ class Client:
 
 
 
-
+        self.root.bind('<Return>', lambda event: print(self.userData))
 
 
     # Func to start client. Starts auth first.
@@ -514,6 +554,7 @@ class Client:
 
 # Just making test client and running it.
 #TODO: Could be turned into multiplayer. would need to move processing to server script.
+
 
 h = Client()
 h.run()
