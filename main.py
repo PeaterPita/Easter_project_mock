@@ -14,18 +14,54 @@ casinoGames = ["Blackjack", "Poker", "Dice"]
 WINDOOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 BACKGROUND_COLOR = "#1d1d1d"
-DEBUG = True
+DEBUG = False
 
 
 # Initalize the client class ### Maybe allowing for multiplayer? only lan with ports?
 
 class Client:
     def __init__(self):
+
+
+
+
+
         self.root = tkinter.Tk()
         self.root.title("Casino")
         self.root.geometry(f'{WINDOOW_WIDTH}x{WINDOW_HEIGHT}')
         self.root.resizable(False, False)
         self.root.configure(background=BACKGROUND_COLOR)
+
+
+
+
+    def validatePassword(self, password):
+        if len(password) < 6:
+            return (False, "Password must be at LEAST 6 characters long")
+        elif password.isdigit():
+            return (False, "Password must contain at LEAST one letter")
+        elif password.isalpha():
+            return (False, "Password must contain at LEAST one number")
+        else:
+            return (True, )
+
+
+    def saveChanges(self):
+        with open('data\mydata.json', 'r+') as f:
+            data = json.load(f)
+            for i, _ in enumerate(data):
+                if _['UserID'] == self.userData['UserID']:
+                    data[i] = self.userData
+            f.seek(0)
+            json.dump(data, f, indent=4)
+            f.truncate()
+
+    
+    def warning(self, parent, message, bg='red', fg='#fff', fontsize=8, row=5, sticky='ew'):
+            warn = tkinter.Label(parent, text=message, bg=bg, fg=fg,border=5, relief="raised", font=('Helvetica', fontsize), padx=10, pady=10)
+            warn.grid(row=row, column=0, sticky=sticky, padx=20, columnspan=2)
+
+
 
 
     # Closing Manager
@@ -35,6 +71,7 @@ class Client:
             self.root.destroy()
 
 
+    # Settings menu: Change profile picture, change username, change password, change balance
 
     def settings(self):
 
@@ -47,6 +84,10 @@ class Client:
         self.settingsModal.resizable(False, False)
         self.settingsModal.configure(background=BACKGROUND_COLOR)
         self.settingsModal.wm_attributes("-topmost", 0)
+
+
+        
+
 
 
         # Func to find what widget has focus, and set it apart if its a text box.
@@ -97,23 +138,61 @@ class Client:
 
         # Creating and positioning the save and discard buttons
 
-        saveChanges = tkinter.Button(self.settingsModal, text="Save Changes", bg=BACKGROUND_COLOR, fg='#fff')
-        saveChanges.grid(row=5, column=0, sticky='news', pady=10, padx=20)
+        saveChanges = tkinter.Button(self.settingsModal, text="Save Changes", bg=BACKGROUND_COLOR, fg='#fff', command= lambda: updateData())
+        saveChanges.grid(row=6, column=0, sticky='news', pady=10, padx=20)
 
-        discardChanges = tkinter.Button(self.settingsModal, text="Discard Changes", bg=BACKGROUND_COLOR, fg='#fff')
-        discardChanges.grid(row=5, column=1, sticky='news', pady=10, padx=20)
+        discardChanges = tkinter.Button(self.settingsModal, text="Discard Changes", bg=BACKGROUND_COLOR, fg='#fff', command= lambda: self.settingsModal.destroy())
+        discardChanges.grid(row=6, column=1, sticky='news', pady=10, padx=20)
 
 
-        # FIXME: Tempory warning
 
-        warning = tkinter.Label(self.settingsModal, text="Warning: Settings do not current work", bg='red', fg='#fff', font=("Helvetica", 10))
-        warning.grid(row=4, column=0, sticky='news', pady=10, padx=20, columnspan=2)
+        
+
+        def updateData():
+        
+            self.userData['username'] = currentUsernameEntry.get()
+
+            
+
+
+            if confirmPasswordEntry.get() and not newPasswordEntry.get():
+                self.warning(self.settingsModal, "Please enter a new password")
+                return
+            elif newPasswordEntry.get() and not confirmPasswordEntry.get():
+                self.warning(self.settingsModal, "You must confirm your password before changing it")
+                return
+            else:
+                if confirmPasswordEntry.get() == self.userData['password']:
+                    valResult = self.validatePassword(newPasswordEntry.get())
+                    if valResult[0]:
+                        self.userData['password'] = newPasswordEntry.get()
+                    else:
+                        self.warning(self.settingsModal, valResult[1])
+                        return
+                else:
+                    self.warning(self.settingsModal, "That is not the right password. If you have forgotten your password, contact the admin", fontsize=7, )
+                    return
+
+
+
+
+
+
+            self.saveChanges()
+            self.settingsModal.destroy()
+
+
+
+
+
+
+
 
 
         # settingsModal row and col config
 
         self.settingsModal.columnconfigure(0, weight=1)
-        self.settingsModal.rowconfigure(4, weight=1)
+        self.settingsModal.rowconfigure(3, weight=1)
 
 
         # Binding the focus event to mouse click.
@@ -152,11 +231,8 @@ class Client:
         self.logInModal.protocol("WM_DELETE_WINDOW", self.on_closing)
 
 
-        # Warning func - simple only 1 pram
 
-        def warning(message):
-            warn = tkinter.Label(self.logInModal, text=message, bg='red', fg='#fff',border=5, relief="raised", font=('Helvetica', 8), padx=10, pady=10)
-            warn.grid(row=5, column=0, sticky='ew', padx=20, columnspan=2)
+        
 
         
         # Func to find what widget has focus, and set it apart if its a text box.
@@ -174,7 +250,7 @@ class Client:
 
         def checkLogin(username, password):
             if not username or not password:
-                warning( "Please fill in all fields")
+                self.warning(self.logInModal, "Please fill in all fields")
             else:
                 with open("data\mydata.json", 'r') as f:
                     for user in json.load(f):
@@ -189,21 +265,21 @@ class Client:
                             
                             return
                         else:
-                            warning("Username or password is incorrect. Try again")
+                            self.warning(self.logInModal, "Username or password is incorrect. Try again")
                 
 
         # Func to create a new user, and add it to the data file, if all fields are valid and not taken.
 
         def createAccount(username, password, confirmPassword):
             if not username or not password or not confirmPassword:
-                warning("Please fill in all fields")
+                self.warning(self.logInModal,"Please fill in all fields")
             elif password != confirmPassword:
-                warning("Passwords do not match")
+                self.warning(self.logInModal,"Passwords do not match")
             else:
                 with open("data\mydata.json", 'r') as f:
                     for user in json.load(f):
                         if user['username'] == username:
-                            warning("Account with that name already exists")
+                            self.warning(self.logInModal,"Account with that name already exists")
                             return
                     with open("data\mydata.json", 'r+') as f:
                         data = json.load(f)
