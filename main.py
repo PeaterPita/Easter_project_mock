@@ -15,7 +15,6 @@ casinoGames = ["Blackjack", "Poker", "Dice"]
 WINDOOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 BACKGROUND_COLOR = "#1d1d1d"
-DEBUG = False
 
 
 # Initalize the client class ### Maybe allowing for multiplayer? only lan with ports?
@@ -633,7 +632,7 @@ h.run()
 #TODO: Sort out comments and docs
 #TODO: Add docstrings to all functions : espically utils
 #TODO: Add Acount Switching : Sign Out
-#TODO: 
+#TODO: Find out why creating a new account sometimes fails and messes up the db. -- # DONE
 #TODO: 
 #TODO: 
 #TODO: 
