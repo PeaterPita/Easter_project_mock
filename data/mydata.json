@@ -8,16 +8,16 @@
     },
     {
         "UserID": 1,
-        "username": "bob",
-        "password": "123",
-        "balance": 100,
-        "ProfilePicture": "C:/Users/peter/Documents/Code/Python/Easter_project_mock/images/MMLogo2.png"
+        "username": "Max",
+        "password": "maxiscool123",
+        "balance": 43,
+        "ProfilePicture": "C:/Users/peter/Documents/Code/Python/Easter_project_mock/images/profilePic1.jpg"
     },
     {
         "UserID": 2,
-        "username": "7",
-        "password": "7",
-        "balance": 100,
-        "ProfilePicture": "images/default.jpg"
+        "username": "Katie",
+        "password": "qwerty",
+        "balance": 580,
+        "ProfilePicture": "C:/Users/peter/Documents/Code/Python/Easter_project_mock/images/profilePic5.jpg"
     }
 ]

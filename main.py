@@ -47,6 +47,18 @@ class Client:
         return pic
 
 
+    def focus(self, parent):
+        widget = parent.focus_get()
+        if isinstance(widget, tkinter.Entry):
+            widget.configure(relief="solid", borderwidth=2, bg='#fff', fg='#000')
+        for child in parent.winfo_children():
+            # print(f'Child: {child}')
+            if child != widget and child.winfo_class() == "Entry":
+                child.configure(relief="groove", borderwidth=1, bg=BACKGROUND_COLOR, fg='#fff')
+
+
+
+
     # Function to validate wether the users password is acceptable. Used in create account and change password.
 
     def validatePassword(self, password):
@@ -87,7 +99,7 @@ class Client:
                 self.userNameLabel.config(text=f'Welcome, \n {self.userData["username"] }' )
 
 
-                # Try to cupdate profile pic on main menu
+                # Try to update profile pic on main menu
 
                 pic = self.getProfilePic()
                 self.profilePic.config(image=pic)
@@ -121,6 +133,7 @@ class Client:
 
     def settings(self):
 
+        pic = self.getProfilePic()
 
         # Disable settings button so multiple windows can't be opened at once. Idiot proofing.
 
@@ -140,9 +153,16 @@ class Client:
         # Allows user to change profile picture by selecting a new picture from their local disk. 
 
         def changePic():
-            newPic  = askopenfilename(initialdir="images", title="Select Profile Picture", filetypes=(("png files", "*.png"), ("all files", "*.*")))
+            newPic  = askopenfilename(initialdir="images", title="Select Profile Picture", filetypes=(("Image files", "*.png *.jpg *.jpeg"), ("all files", "*.*")))
             self.userData['ProfilePicture'] = newPic
-            self.saveChanges()
+
+            try:
+                pic = self.getProfilePic()
+                self.PicPreview.config(image=pic)
+                self.PicPreview.image = pic 
+            except:
+                print("Something has gone wrong with updating profile pic on settngs")
+
 
 
         # If user discards changes, warn them and get confirmation.
@@ -158,20 +178,16 @@ class Client:
         self.settingsModal.protocol("WM_DELETE_WINDOW", lambda: discard())
 
 
-        # Func to find what widget has focus, and set it apart if its a text box.
-
-        def focus(event):
-            widget = self.settingsModal.focus_get()
-            widget.configure(relief="solid", borderwidth=2, bg='#fff', fg='#000')
-            for child in self.settingsModal.winfo_children():
-                if child != widget and child.winfo_class() == "Entry":
-                    child.configure(relief="groove", borderwidth=1, bg=BACKGROUND_COLOR, fg='#fff')
-
-
         # Creating and positioning the 2 sub groups of settings: Cosmetic and Passwords
 
         cosmeticFrame = tkinter.LabelFrame(self.settingsModal, text="Cosmetic", labelanchor="nw", bg=BACKGROUND_COLOR, fg='#fff')
         cosmeticFrame.grid(row=0, column=0, sticky='news', pady=10, padx=20, columnspan=2)
+
+        cosmeticFrame.grid_columnconfigure(2, weight=1)
+        cosmeticFrame.grid_rowconfigure(0, weight=1)
+
+
+
 
         changePasswordFrame = tkinter.LabelFrame(self.settingsModal, text="Passwords", labelanchor="nw", bg=BACKGROUND_COLOR, fg='#fff')
         changePasswordFrame.grid(row=1, column=0, sticky='news', pady=10, padx=20, columnspan=2)
@@ -183,7 +199,7 @@ class Client:
         currentUsername.grid(row=0, column=0, sticky='w', padx=10, pady=10)
 
         currentUsernameEntry = tkinter.Entry(cosmeticFrame, width=20, bg=BACKGROUND_COLOR, fg='#fff')
-        currentUsernameEntry.grid(row=0, column=1, sticky='w', padx=10, pady=10)
+        currentUsernameEntry.grid(row=0, column=1, sticky='w', padx=10,)
 
         currentUsernameEntry.delete(0, tkinter.END)
         currentUsernameEntry.insert(0, self.userData['username'])
@@ -192,7 +208,12 @@ class Client:
         # Creating and positioning the button to select new profile picture
 
         profilePicSelector = tkinter.Button(cosmeticFrame, text="Change Profile Picture", bg=BACKGROUND_COLOR, fg='#fff', command= lambda: changePic())
-        profilePicSelector.grid(row=1, column=0, sticky='w', padx=10, pady=10)
+        profilePicSelector.grid(row=1, column=1, sticky='w', padx=10, pady=10, columnspan=3)
+
+        self.PicPreview = tkinter.Button(cosmeticFrame ,image=pic, )
+        self.PicPreview.image = pic
+        self.PicPreview.grid(row=0, column=2, columnspan=2, rowspan=2, padx=10, pady=10)
+
 
 
         # Creating and positiiing the confrim and new password labels and entries 
@@ -269,9 +290,9 @@ class Client:
         self.settingsModal.rowconfigure(3, weight=1)
 
 
-        # Binding the focus event to mouse click.
+        # Binding the focus event to FocusIn click.
 
-        self.settingsModal.bind_all("<Button-1>", lambda event: focus(event))
+        self.settingsModal.bind_all("<FocusIn>", lambda event: self.focus(self.settingsModal))
 
 
     # Auth Manages the login and registration of the user as well as the modal.
@@ -305,12 +326,7 @@ class Client:
 
         # Func to find what widget has focus, and set it apart if its a text box.
 
-        def focus(event):
-            widget = self.logInModal.focus_get()
-            widget.configure(relief="solid", borderwidth=2, bg='#fff', fg='#000')
-            for child in self.logInModal.winfo_children():
-                if child != widget and child.winfo_class() == "Entry":
-                    child.configure(relief="groove", borderwidth=1, bg=BACKGROUND_COLOR, fg='#fff')
+        
 
 
         # Func to check if the user has entered a valid username and password. 
@@ -464,9 +480,9 @@ class Client:
             confirmPasswordEntry.grid_remove()
 
         
-        # Binding the focus event to mouse click.
+        # Binding the focus event to FocusIn click.
 
-        self.logInModal.bind_all("<Button-1>", lambda event: focus(event))
+        self.logInModal.bind_all("<FocusIn>", lambda event: self.focus(self.logInModal))
         
         
     # Function to create the main menu.
@@ -574,29 +590,58 @@ h.run()
 
 ###TODOS###############################################################################################################################################################
 
-#TODO: make settings actually look good. Placements are a bit weird atm
-#TODO: Allowing for more types of images for pics
+#TODO: make settings actually look good. Placements are a bit weird atm -- # DONE
+#TODO: Allowing for more types of images for pics -- # DONE
 #TODO: Limit allowed profile pics to min size. 100x100?
-#TODO: Figure out what to put in sidebar white space - Tips? Leaderboard?
+#TODO: Figure out what to put in sidebar white space - Tips? Leaderboard? -- # WOI
 #TODO: Look into multiplayer support. - Game is already kinda set up for it. Just need server and porting
 #TODO: Actually make the casino games
 #TODO: Make game selection menu - Could do list of buttons or one button that changes. - Look at old casino for how to do that!
 #TODO: Proper dev debug menu
 #TODO: Xp and Levling system. - wayy further done could unlock.. things?
 #TODO: Maybe figure out better way to update db specif items. Very slow atm with lots of seperate instances of opening
-#TODO: Look into if python can connect to mongoDB
-#TODO: Make copy of userProfilePic in /images/ incase pic is deleted from local disk
+#TODO: Look into if python can connect to mongoDB -- # DONE -- will be too much work to transfer over now. Hopefully local json is good enough
+#TODO: Make copy of userProfilePic in /images/backup incase pic is deleted from local disk
 #TODO: Sort out all the fonts and sizes - some buttons still clipping
 #TODO: Find a suitable theme - do like the dark gray and white atm. Not very casino looking tho.
 #TODO: When changing username add the same check as when making a new account.
-#TODO: Fix entry focusing issues - Some boxes left highlighted after focus is lost.
+#TODO: Fix entry focusing issues - Some boxes left highlighted after focus is lost. -- Only on settings screen? -- # WOI
 #TODO: Make it more obvious that settings is accessed by clikcing on profile pic. - Tips Section on first boot?
 #TODO: Maybe increase size of main menu. Sidebar is bigger than expected
 #TODO: Distinguish quit button from the background. Blends in with the sidebar
-#TODO: Fix multiple settings windows being allowed to be open after changing profile pic? Odd behavior. - not sure why this is
-#TODO: Find something to fill extra space in settings modal. Or decrease size of modal.
-#TODO: Find why username label flickers after clicking back from modal
+#TODO: Fix multiple settings windows being allowed to be open after changing profile pic? Odd behavior. - not sure why this is -- # DONE
+#TODO: Find something to fill extra space in settings modal. Or decrease size of modal. -- # DONE
+#TODO: Find why username label flickers after clicking back from modal -- #  DONE
 #TODO: Find an actaul good looking font for general
 #TODO: Test if program looks the same on other platforms. - Tkinter uses native components i think
-#TODO: Fix focus trying to change the foreground of widgets that dont have a foreground option
+#TODO: Fix focus trying to change the foreground of widgets that dont have a foreground option -- # DONE
+#TODO: Add profile pic preview to settings modal -- # DONE
+#TODO: Fix changing profile pic so it doesnt update db untill user saves changes. : Allows for user to discard changed profile pic change if they want. -- # DONE
+#TODO: Add in fake users -- # DONE
+#TODO: Fix bug where setting modal gets hidden behind main screen when chaning profile pic. -- # WOI
+#TODO: Move all utils to utils.py 
+#TODO: Seperate files for each game? 
+#TODO: Add readme in git repo 
+#TODO: Sort out comments and docs
+#TODO: Add docstrings to all functions : espically utils
 #TODO: 
+
+
+###MARKS###############################################################################################################################################################
+
+# Input and Output - 1 -- # DONE
+# Variables - 1 -- # DONE
+# String handling - 1 -- # DONE
+# If Statements - 1 -- # DONE
+
+# While Loops - 2 -- IMPOSSIBLE to do with tkinter - MAIN_loop is technically a while # WOI
+# For loops - 2 -- # DONE
+# Lists - 2 -- # DONE
+# Functions - 2 -- # DONE
+
+# 2d Arrays - 3 
+# Parameters - 3 -- # DONE
+# Return Statments - 3 -- # DONE
+# Writing to Files/DataBase - 3 -- # DONE
+
+# GUI - 5 --# DONE
