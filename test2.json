@@ -26,5 +26,12 @@
     "password": "12345b",
     "balance": 100,
     "ProfilePicture": "images/default.jpg"
+  },
+  {
+    "UserID": 4,
+    "username": "Testing",
+    "password": "12345t",
+    "balance": 100,
+    "ProfilePicture": "images/default.jpg"
   }
 ]

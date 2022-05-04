@@ -21,6 +21,10 @@ DEBUG = False
 # Initalize the client class ### Maybe allowing for multiplayer? only lan with ports?
 
 class Client:
+
+
+    # Initialize the client class
+
     def __init__(self):
 
 
@@ -47,6 +51,8 @@ class Client:
         return pic
 
 
+    # Function to get the focused widget. Currently only used to change entry so its more obvious what is being edited.
+
     def focus(self, parent):
         widget = parent.focus_get()
         if isinstance(widget, tkinter.Entry):
@@ -55,8 +61,6 @@ class Client:
             # print(f'Child: {child}')
             if child != widget and child.winfo_class() == "Entry":
                 child.configure(relief="groove", borderwidth=1, bg=BACKGROUND_COLOR, fg='#fff')
-
-
 
 
     # Function to validate wether the users password is acceptable. Used in create account and change password.
@@ -371,8 +375,9 @@ class Client:
                             return
                     with open("data\mydata.json", 'r+') as f:
                         data = json.load(f)
+                        print("LOADED")
+                        print(f'DATA: {data}')
                         data.append({
-                                        #Template user
                                         "UserID": (int(data[-1]['UserID'])) + 1,
                                         "username": username,
                                         "password": password,
@@ -380,8 +385,11 @@ class Client:
                                         "ProfilePicture": "images/default.jpg"
                                         })
                         f.seek(0)
-                        json.dump(data, f)
+                        json.dump(data, f, indent=4)
+                        print(f'DATA2: {data}')
+                        print("DUMPED")
                         # time.sleep(0.1)  # add a delay to make sure the file is written. Seems to not need anymore?
+                print(f'USERNAME: {username}, PASSWORD: {password}')
                 checkLogin(username, password) 
 
         
@@ -624,6 +632,15 @@ h.run()
 #TODO: Add readme in git repo 
 #TODO: Sort out comments and docs
 #TODO: Add docstrings to all functions : espically utils
+#TODO: Add Acount Switching : Sign Out
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
 #TODO: 
 
 
