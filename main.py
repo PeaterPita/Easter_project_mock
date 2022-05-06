@@ -158,6 +158,16 @@ class Client:
 
         def changePic():
             newPic  = askopenfilename(initialdir="images", title="Select Profile Picture", filetypes=(("Image files", "*.png *.jpg *.jpeg"), ("all files", "*.*")))
+
+
+            # Get width and height of new pic. if less than 100x100, warn user and return, make them pick a new picture.
+
+            (newPicWIDTH, newPicHEIGHT) = Image.open(newPic).size
+
+            if newPicWIDTH < 100 or newPicHEIGHT < 100:
+                self.warning(self.settingsModal, "Profile Picture must be miniuim 100x100")
+                return
+
             self.userData['ProfilePicture'] = newPic
 
             try:
@@ -622,7 +632,7 @@ h.run()
 
 #TODO: make settings actually look good. Placements are a bit weird atm -- # DONE
 #TODO: Allowing for more types of images for pics -- # DONE
-#TODO: Limit allowed profile pics to min size. 100x100?
+#TODO: Limit allowed profile pics to min size. 100x100? -- # DONE
 #TODO: Figure out what to put in sidebar white space - Tips? Leaderboard? -- # DONE
 #TODO: Look into multiplayer support. - Game is already kinda set up for it. Just need server and porting
 #TODO: Actually make the casino games
@@ -651,7 +661,7 @@ h.run()
 #TODO: Fix bug where setting modal gets hidden behind main screen when chaning profile pic. -- # WOI
 #TODO: Move all utils to utils.py 
 #TODO: Seperate files for each game? 
-#TODO: Add readme in git repo 
+#TODO: Add readme in github repo 
 #TODO: Sort out comments and docs
 #TODO: Add docstrings to all functions : espically utils
 #TODO: Add Acount Switching : Sign Out
@@ -659,8 +669,8 @@ h.run()
 #TODO: Discord integration 
 #TODO: Fix sidebar changing size -- # DONE
 #TODO: Add binding so user can press enter to confirm instead of clicking buttons // QOL
-#TODO: 
-#TODO: 
+#TODO: Add in a system to get rid off old warning messages. Are starting to clog up the screen and could confuse users. 
+#TODO: Add in font settings in the settings modal. Might mess up sizing. // dont allow font size 
 #TODO: 
 #TODO: 
 #TODO: 
