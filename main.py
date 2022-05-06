@@ -246,7 +246,17 @@ class Client:
         # Func to update the data in the userData dictionary, and save it to the userData.json file. aswell as close settings. 
 
         def updateData():
-            self.userData['username'] = currentUsernameEntry.get()
+
+
+            # Check to make sure new username isnt already an account
+
+            wantedUsername = currentUsernameEntry.get()
+            with open("data\mydata.json", 'r') as f:
+                    for user in json.load(f):
+                        if user['username'] == wantedUsername and user['username'] != self.userData['username']:
+                            self.warning(self.settingsModal,"Account with that name already exists")
+                            return
+            self.userData['username'] = wantedUsername
 
 
             # This is only here because i messed up the below if statmnent tree, bodge fix.
@@ -611,7 +621,7 @@ h.run()
 #TODO: Make copy of userProfilePic in /images/backup incase pic is deleted from local disk
 #TODO: Sort out all the fonts and sizes - some buttons still clipping
 #TODO: Find a suitable theme - do like the dark gray and white atm. Not very casino looking tho.
-#TODO: When changing username add the same check as when making a new account.
+#TODO: When changing username add the same check as when making a new account. -- # DONE
 #TODO: Fix entry focusing issues - Some boxes left highlighted after focus is lost. -- Only on settings screen? -- # WOI
 #TODO: Make it more obvious that settings is accessed by clikcing on profile pic. - Tips Section on first boot?
 #TODO: Maybe increase size of main menu. Sidebar is bigger than expected
@@ -632,8 +642,8 @@ h.run()
 #TODO: Sort out comments and docs
 #TODO: Add docstrings to all functions : espically utils
 #TODO: Add Acount Switching : Sign Out
-#TODO: Find out why creating a new account sometimes fails and messes up the db. -- # DONE
-#TODO: 
+#TODO: Find out why creating a new account sometimes fails and messes up the db. -- # DONE // Maybe
+#TODO: Discord integration 
 #TODO: 
 #TODO: 
 #TODO: 
