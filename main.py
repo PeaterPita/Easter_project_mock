@@ -7,12 +7,13 @@ from PIL import Image, ImageTk
 from pathlib import Path
 import time
 from tkinter.filedialog import askopenfilename
+import random
 
 
 # Constants
 
 casinoGames = ["Blackjack", "Poker", "Dice"]
-WINDOOW_WIDTH = 800
+WINDOOW_WIDTH = 1000
 WINDOW_HEIGHT = 600
 BACKGROUND_COLOR = "#1d1d1d"
 
@@ -514,8 +515,8 @@ class Client:
         
         # Creation and placement of the sidebar frame.
 
-        self.sideBarFrame = tkinter.Frame(self.root, height=WINDOW_HEIGHT,relief='sunken', borderwidth=1) #maybe width 200
-        self.sideBarFrame.grid(row=0, column=0, sticky='nesw')
+        self.sideBarFrame = tkinter.Frame(self.root, height=WINDOW_HEIGHT,relief='sunken', borderwidth=1, width=200)
+        self.sideBarFrame.grid(row=0, column=0, sticky='nsw')
         
 
         # Creation and placement of the main frame
@@ -560,22 +561,34 @@ class Client:
 
         
         # Creation and placement a tips section. 
-        # TODO: Might change later. leaderboard? Recent games? not sure. just didnt like all the white space.
 
-        TipsFrame = tkinter.LabelFrame(self.sideBarFrame, text="Tips", labelanchor="nw", bd=4, font=("Helvetica", 12))
+        TipsFrame = tkinter.LabelFrame(self.sideBarFrame, text="Tips", labelanchor="nw", bd=4, font=("Helvetica", 12), )
         TipsFrame.grid(row=3, column=0, columnspan=3, sticky='news', pady=10, padx=20)
 
-        
+
+        # Fetching a random tip from a json file, easy to add more.
+
+        with open("data\\tips.json", "r") as t:
+            tip = json.load(t)
+            tip = tip[str(random.randint(0, len(tip)-1))]
+            
+           
+        # Creation and placement of the tip label.
+
+        Tip = tkinter.Label(TipsFrame, text=tip, justify='center', wraplength=150, font=("Helvetica", 12))
+        Tip.grid(row=0, column=0, sticky='nws', pady=10)
+
+
         # Quit Button Creation and placement
 
         QuitButton = tkinter.Button(self.sideBarFrame, text="Quit", command=self.on_closing, )
         QuitButton.grid(row=4, column=0, sticky='sew', padx=10, pady=10, columnspan=3)
 
 
-        # Debug option so i know what profile im working with. 
-        #FIXME : Remove this later.
+        # Stop sidebar from shrinking or expanding to fit the content. Now the sidebar is always 200 SU
 
-        self.root.bind('<Return>', lambda event: print(self.userData))
+        self.sideBarFrame.grid_propagate(False)
+
 
 
     # Func to start client. Starts auth first.
@@ -610,7 +623,7 @@ h.run()
 #TODO: make settings actually look good. Placements are a bit weird atm -- # DONE
 #TODO: Allowing for more types of images for pics -- # DONE
 #TODO: Limit allowed profile pics to min size. 100x100?
-#TODO: Figure out what to put in sidebar white space - Tips? Leaderboard? -- # WOI
+#TODO: Figure out what to put in sidebar white space - Tips? Leaderboard? -- # DONE
 #TODO: Look into multiplayer support. - Game is already kinda set up for it. Just need server and porting
 #TODO: Actually make the casino games
 #TODO: Make game selection menu - Could do list of buttons or one button that changes. - Look at old casino for how to do that!
@@ -619,17 +632,17 @@ h.run()
 #TODO: Maybe figure out better way to update db specif items. Very slow atm with lots of seperate instances of opening
 #TODO: Look into if python can connect to mongoDB -- # DONE -- will be too much work to transfer over now. Hopefully local json is good enough
 #TODO: Make copy of userProfilePic in /images/backup incase pic is deleted from local disk
-#TODO: Sort out all the fonts and sizes - some buttons still clipping
+#TODO: Sort out all the fonts and sizes - some buttons still clipping -- # DONE
 #TODO: Find a suitable theme - do like the dark gray and white atm. Not very casino looking tho.
 #TODO: When changing username add the same check as when making a new account. -- # DONE
 #TODO: Fix entry focusing issues - Some boxes left highlighted after focus is lost. -- Only on settings screen? -- # WOI
 #TODO: Make it more obvious that settings is accessed by clikcing on profile pic. - Tips Section on first boot?
-#TODO: Maybe increase size of main menu. Sidebar is bigger than expected
+#TODO: Maybe increase size of main menu. Sidebar is bigger than expected -- # DONE
 #TODO: Distinguish quit button from the background. Blends in with the sidebar
 #TODO: Fix multiple settings windows being allowed to be open after changing profile pic? Odd behavior. - not sure why this is -- # DONE
 #TODO: Find something to fill extra space in settings modal. Or decrease size of modal. -- # DONE
 #TODO: Find why username label flickers after clicking back from modal -- #  DONE
-#TODO: Find an actaul good looking font for general
+#TODO: Find an actaul good looking font for general use. -- # DONE
 #TODO: Test if program looks the same on other platforms. - Tkinter uses native components i think
 #TODO: Fix focus trying to change the foreground of widgets that dont have a foreground option -- # DONE
 #TODO: Add profile pic preview to settings modal -- # DONE
@@ -644,8 +657,8 @@ h.run()
 #TODO: Add Acount Switching : Sign Out
 #TODO: Find out why creating a new account sometimes fails and messes up the db. -- # DONE // Maybe
 #TODO: Discord integration 
-#TODO: 
-#TODO: 
+#TODO: Fix sidebar changing size -- # DONE
+#TODO: Add binding so user can press enter to confirm instead of clicking buttons // QOL
 #TODO: 
 #TODO: 
 #TODO: 
