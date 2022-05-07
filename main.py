@@ -689,7 +689,7 @@ class Client:
 
         with open("data\\tips.json", "r") as t:
             tip = json.load(t)
-            tip = tip[str(random.randint(0, len(tip)-1))] if not self.BOOT_TIP else tip["0"]
+            tip = tip[str(random.randint(0, len(tip)))] if not self.BOOT_TIP else tip["0"]
             
            
         # Creation and placement of the tip label.
@@ -758,7 +758,7 @@ h.run()
 #TODO: Allowing for more types of images for pics -- # DONE
 #TODO: Limit allowed profile pics to min size. 100x100? -- # DONE
 #TODO: Figure out what to put in sidebar white space - Tips? Leaderboard? -- # DONE
-#TODO: Look into multiplayer support. - Game is already kinda set up for it. Just need server and porting
+#TODO: Look into multiplayer support. - Game is already kinda set up for it. Just need server and porting -- # DNTD
 #TODO: Actually make the casino games
 #TODO: Make game selection menu - Could do list of buttons or one button that changes. - Look at old casino for how to do that!
 #TODO: Proper dev debug menu
@@ -798,7 +798,7 @@ h.run()
 #TODO: Add in font settings in the settings modal. Might mess up sizing. // dont allow font size -- # CNC
 #TODO: Fix longer tips clipping -- # DONE
 #TODO: Look into why cold boot sometimes takes so long 
-#TODO: 
+#TODO: Fix tip not picking last tip in db -- # DONE
 #TODO: 
 #TODO: 
 #TODO: 
