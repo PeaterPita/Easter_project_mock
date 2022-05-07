@@ -343,6 +343,7 @@ class Client:
             if not confirmPasswordEntry.get() and not newPasswordEntry.get():
                 self.saveChanges()
                 self.settingsModal.destroy()
+                return
 
 
             # If the user has entered their old password but not a new one, warn the user to do so - also check for the opposite. in either case return and dont update anything.
@@ -803,7 +804,7 @@ h.run()
 #TODO: Look into why cold boot sometimes takes so long 
 #TODO: Fix tip not picking last tip in db -- # DONE
 #TODO: Find more tips to add to list
-#TODO: Look into _tkinter.TclError: invalid command name ".!toplevel2.!labelframe2.!entry"
+#TODO: Look into _tkinter.TclError: invalid command name ".!toplevel2.!labelframe2.!entry" -- # DONE // forgot a return statment
 #TODO: 
 #TODO: 
 #TODO: 
