@@ -9,13 +9,15 @@ import time
 from tkinter.filedialog import askopenfilename
 import random
 
-
 # Constants
 
 casinoGames = ["Blackjack", "Poker", "Dice"]
 WINDOOW_WIDTH = 1000
 WINDOW_HEIGHT = 600
 BACKGROUND_COLOR = "#1d1d1d"
+
+
+FONT = 'Helvetica'
 
 
 # Initalize the client class ### Maybe allowing for multiplayer? only lan with ports?
@@ -40,6 +42,12 @@ class Client:
     # Function to get the users profile pic. If the original file is not found, it will return the default profile pic.
 
     def getProfilePic(self):
+        """getProfilePic - Returns the profile picture of the user as a ImageTk object. If the file is not found, it will return the default profile pic.
+
+        Returns:
+            ImageTk.PhotoImage: the profile picture as a ImageTk object. Resized to be 75x75.
+        """
+
         try:
             profilePic = Image.open(self.userData['ProfilePicture'])
         except:
@@ -54,6 +62,12 @@ class Client:
     # Function to get the focused widget. Currently only used to change entry so its more obvious what is being edited.
 
     def focus(self, parent):
+        """focus - Changes the look of the focused widget. Currently only used to change entry so its more obvious what is being edited.
+
+        Args:
+            parent (Frame): The parent frame to check for focused widgets. 
+        """
+
         widget = parent.focus_get()
         if isinstance(widget, tkinter.Entry):
             widget.configure(relief="solid", borderwidth=2, bg='#fff', fg='#000')
@@ -66,6 +80,16 @@ class Client:
     # Function to validate wether the users password is acceptable. Used in create account and change password.
 
     def validatePassword(self, password):
+        """validatePassword Checks the supplied password against the requirements.
+
+        Args:
+            password (str): the password the user has entered
+
+        Returns:
+            Tuple: A tuple containing wether the password is valid, and if it isnt the reason why.
+        """
+
+
         if len(password) < 6:
             return (False, "Password must be at LEAST 6 characters long")
         elif password.isdigit():
@@ -79,6 +103,9 @@ class Client:
     # Main Func to save all data for user. Can update self.userData anywhere but to save data to db must call this func.
 
     def saveChanges(self):
+        """saveChanges - Saves all the changes made from previous calls to the database. Also updates some text on the main menu
+        """
+
         with open('data\mydata.json', 'r+') as f:
             data = json.load(f)
             for i, _ in enumerate(data):
@@ -122,13 +149,30 @@ class Client:
     # Main warning function. Used to warn the user of any errors. Only need to supply parent and message
 
     def warning(self, parent, message, bg='red', fg='#fff', fontsize=8, row=5, sticky='ew'):
-            warn = tkinter.Label(parent, text=message, bg=bg, fg=fg,border=5, relief="raised", font=('Helvetica', fontsize), padx=10, pady=10)
-            warn.grid(row=row, column=0, sticky=sticky, padx=20, columnspan=2)
+        """warning Displays a warning message to the user.
+
+        Args:
+            parent (Frame): The parent frame to add the warning message to.
+            message (str): The message to display to the user.
+            bg (str, optional): The background color. Defaults to 'red'.
+            fg (str, optional): The foreground color/Color of the text. Defaults to '#fff'.
+            fontsize (int, optional): The size of the text in the warning message. Defaults to 8.
+            row (int, optional): What row the message should be displayed on. Helps with positiing . Defaults to 5.
+            sticky (str, optional): How the warning should stick to the space its given. Defaults to 'ew'.
+        """
+
+
+        warn = tkinter.Label(parent, text=message, bg=bg, fg=fg,border=5, relief="raised", font=(FONT, fontsize), padx=10, pady=10)
+        warn.grid(row=row, column=0, sticky=sticky, padx=20, columnspan=2)
 
 
     # Closing Manager For root
 
     def on_closing(self):
+        """on_closing Controls the closing of the root window. Asks for confirmation and will eventaully control saving of data.
+        """
+
+
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             self.root.destroy()
 
@@ -136,6 +180,9 @@ class Client:
     # Settings menu: Change profile picture, change username, change password, change balance
 
     def settings(self):
+        """settings The main settings function. Generate the modal window and displays all the widgets.
+        """
+
 
         pic = self.getProfilePic()
 
@@ -157,6 +204,10 @@ class Client:
         # Allows user to change profile picture by selecting a new picture from their local disk. 
 
         def changePic():
+            """changePic Asks the user to pick a new picture from their local disk. Also checks if the file is an image and larger than 100x100
+            """
+
+
             newPic  = askopenfilename(initialdir="images", title="Select Profile Picture", filetypes=(("Image files", "*.png *.jpg *.jpeg"), ("all files", "*.*")))
 
 
@@ -178,10 +229,13 @@ class Client:
                 print("Something has gone wrong with updating profile pic on settngs")
 
 
-
         # If user discards changes, warn them and get confirmation.
         
         def discard():
+            """discard Controls the discard button. Asks the user if they want to discard changes. If they do, closes the modal. Does not save any data
+            """
+
+
             if messagebox.askokcancel("Close settings", "Are you sure you want to close settings without saving? Your changes will not be saved"):
                 self.settingsModal.destroy()
                 self.profilePic.config(state='normal')
@@ -257,6 +311,8 @@ class Client:
         # Func to update the data in the userData dictionary, and save it to the userData.json file. aswell as close settings. 
 
         def updateData():
+            """updateData Checks to see if supplied data is valid and can be saved. If not it warns the user
+            """
 
 
             # Check to make sure new username isnt already an account
@@ -337,7 +393,7 @@ class Client:
 
         # Login warning on the main screen. Telling the user to log in incase modal doesnt appear.
 
-        tkinter.Label(self.root, text="Please log in first, if you do not see a log in box \nplease close the program and reopen it.", bg=BACKGROUND_COLOR, fg='#ffffff', font=('Helvetica', 24)).grid(row=0, column=0, sticky='nesw')
+        tkinter.Label(self.root, text="Please log in first, if you do not see a log in box \nplease close the program and reopen it.", bg=BACKGROUND_COLOR, fg='#ffffff', font=(FONT, 24)).grid(row=0, column=0, sticky='nesw')
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
 
@@ -357,6 +413,14 @@ class Client:
         # TODO: Hash the password. 
 
         def checkLogin(username, password):
+            """checkLogin Checks to see if the supplied username and password are valid. if they are, log them in and display the mainmenu, if not call warning()
+
+            Args:
+                username (str): The username the user has entered.
+                password (str): The password the user has entered.
+            """
+
+
             if not username or not password:
                 self.warning(self.logInModal, "Please fill in all fields")
             else:
@@ -379,6 +443,15 @@ class Client:
         # Func to create a new user, and add it to the data file, if all fields are valid and not taken.
 
         def createAccount(username, password, confirmPassword):
+            """createAccount Creates a new user, and adds it to the data base, aslong as the supplied credentials are valid. and the account name doesnt already exist.
+
+            Args:
+                username (str): The username the user has entered.
+                password (str): The password the user has entered.
+                confirmPassword (str): The password the user has confirmed. Should be the same as password
+            """
+
+
             valResult = self.validatePassword(password)
             if not username or not password or not confirmPassword:
                 self.warning(self.logInModal,"Please fill in all fields")
@@ -467,6 +540,10 @@ class Client:
         # Function to switch to the create account screen.
 
         def switch_to_create_accont():
+            
+
+
+
             # Change title and size of the modal.
 
             self.logInModal.title("Create Account")
@@ -553,7 +630,7 @@ class Client:
 
         # Creation and placement of the users name at the top of the sidebar
 
-        self.userNameLabel = tkinter.Label(self.sideBarFrame, text=f'Welcome, \n{self.userData["username"]}',font=("Helvetica", 12), bg=BACKGROUND_COLOR, fg='#fff')
+        self.userNameLabel = tkinter.Label(self.sideBarFrame, text=f'Welcome, \n{self.userData["username"]}',font=(FONT, 12), bg=BACKGROUND_COLOR, fg='#fff')
         self.userNameLabel.grid(row=0, column=0, sticky='new', columnspan=3,pady=20, padx=20)
 
 
@@ -566,13 +643,13 @@ class Client:
 
         # Creation and placement of the Users current chip counter under profile picture.
 
-        self.chipCounter = tkinter.Label(self.sideBarFrame, text=f'Chips: {self.userData["balance"]}', font=("Helvetica", 12))
+        self.chipCounter = tkinter.Label(self.sideBarFrame, text=f'Chips: {self.userData["balance"]}', font=(FONT, 12))
         self.chipCounter.grid(row=2, column=0, padx=20, columnspan=3, sticky='new', pady=10)
 
         
         # Creation and placement a tips section. 
 
-        TipsFrame = tkinter.LabelFrame(self.sideBarFrame, text="Tips", labelanchor="nw", bd=4, font=("Helvetica", 12), )
+        TipsFrame = tkinter.LabelFrame(self.sideBarFrame, text="Tips", labelanchor="nw", bd=4, font=(FONT, 12), )
         TipsFrame.grid(row=3, column=0, columnspan=3, sticky='news', pady=10, padx=20)
 
 
@@ -585,7 +662,7 @@ class Client:
            
         # Creation and placement of the tip label.
 
-        Tip = tkinter.Label(TipsFrame, text=tip, justify='center', wraplength=150, font=("Helvetica", 12))
+        Tip = tkinter.Label(TipsFrame, text=tip, justify='center', wraplength=150, font=(FONT, 12))
         Tip.grid(row=0, column=0, sticky='nws', pady=10)
 
 
@@ -604,6 +681,8 @@ class Client:
     # Func to start client. Starts auth first.
 
     def run(self):
+        """run open up the auth menu and start the mainloop
+        """
 
 
         # Bind custome close manager to root window
@@ -630,6 +709,14 @@ h.run()
 
 ###TODOS###############################################################################################################################################################
 
+# DONE - Completed 
+# WOI - Working on it
+# CNC - Cannnot complete
+# TODO - To do
+
+
+
+
 #TODO: make settings actually look good. Placements are a bit weird atm -- # DONE
 #TODO: Allowing for more types of images for pics -- # DONE
 #TODO: Limit allowed profile pics to min size. 100x100? -- # DONE
@@ -646,7 +733,7 @@ h.run()
 #TODO: Find a suitable theme - do like the dark gray and white atm. Not very casino looking tho.
 #TODO: When changing username add the same check as when making a new account. -- # DONE
 #TODO: Fix entry focusing issues - Some boxes left highlighted after focus is lost. -- Only on settings screen? -- # WOI
-#TODO: Make it more obvious that settings is accessed by clikcing on profile pic. - Tips Section on first boot?
+#TODO: Make it more obvious that settings is accessed by clikcing on profile pic. - Tips Section on first boot? -- # DONE
 #TODO: Maybe increase size of main menu. Sidebar is bigger than expected -- # DONE
 #TODO: Distinguish quit button from the background. Blends in with the sidebar
 #TODO: Fix multiple settings windows being allowed to be open after changing profile pic? Odd behavior. - not sure why this is -- # DONE
@@ -663,14 +750,14 @@ h.run()
 #TODO: Seperate files for each game? 
 #TODO: Add readme in github repo 
 #TODO: Sort out comments and docs
-#TODO: Add docstrings to all functions : espically utils
+#TODO: Add docstrings to all functions : espically utils -- # DONE
 #TODO: Add Acount Switching : Sign Out
 #TODO: Find out why creating a new account sometimes fails and messes up the db. -- # DONE // Maybe
 #TODO: Discord integration 
 #TODO: Fix sidebar changing size -- # DONE
 #TODO: Add binding so user can press enter to confirm instead of clicking buttons // QOL
-#TODO: Add in a system to get rid off old warning messages. Are starting to clog up the screen and could confuse users. 
-#TODO: Add in font settings in the settings modal. Might mess up sizing. // dont allow font size 
+#TODO: Add in a system to get rid off old warning messages. Are starting to clog up the screen and could confuse users. // or stack them up and only show the last one.
+#TODO: Add in font settings in the settings modal. Might mess up sizing. // dont allow font size -- # CNC
 #TODO: 
 #TODO: 
 #TODO: 
@@ -683,7 +770,7 @@ h.run()
 # String handling - 1 -- # DONE
 # If Statements - 1 -- # DONE
 
-# While Loops - 2 -- IMPOSSIBLE to do with tkinter - MAIN_loop is technically a while # WOI
+# While Loops - 2 -- IMPOSSIBLE to do with tkinter - MAIN_loop is technically a while # CNC
 # For loops - 2 -- # DONE
 # Lists - 2 -- # DONE
 # Functions - 2 -- # DONE
@@ -694,3 +781,5 @@ h.run()
 # Writing to Files/DataBase - 3 -- # DONE
 
 # GUI - 5 --# DONE
+
+#24/29 = 82%
