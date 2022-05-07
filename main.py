@@ -14,7 +14,15 @@ import random
 casinoGames = ["Blackjack", "Poker", "Dice"]
 WINDOOW_WIDTH = 1000
 WINDOW_HEIGHT = 600
+
+
+# COLORS
+
 BACKGROUND_COLOR = "#1d1d1d"
+SECONDARY_BACKGROUND_COLOR = "#f5f5f5"
+FOREGROUND_COLOR = "#ffffff"
+ACCENT_COLOR = "#ff0000"
+
 
 
 FONT = 'Helvetica'
@@ -37,6 +45,7 @@ class Client:
         self.root.geometry(f'{WINDOOW_WIDTH}x{WINDOW_HEIGHT}')
         self.root.resizable(False, False)
         self.root.configure(background=BACKGROUND_COLOR)
+        self.BOOT_TIP = False
 
 
     # Function to get the users profile pic. If the original file is not found, it will return the default profile pic.
@@ -482,7 +491,11 @@ class Client:
                         print(f'DATA2: {data}')
                         print("DUMPED")
                         # time.sleep(0.1)  # add a delay to make sure the file is written. Seems to not need anymore?
-                print(f'USERNAME: {username}, PASSWORD: {password}')
+
+                
+                # Forcing the first tip the new user sees to be the first one, about how to access settings
+
+                self.BOOT_TIP = True             
                 checkLogin(username, password) 
 
         
@@ -588,7 +601,11 @@ class Client:
         # Binding the focus event to FocusIn click.
 
         self.logInModal.bind_all("<FocusIn>", lambda event: self.focus(self.logInModal))
-        
+
+
+        # Binding the checkLogin to the enter key being pressed while the password entry is focused. // QOL means the user can just use the keybaord to navigate
+
+        passwordEntry.bind("<Return>", lambda event: checkLogin(userNameEntry.get(), passwordEntry.get()))
         
     # Function to create the main menu.
 
@@ -602,7 +619,7 @@ class Client:
         
         # Creation and placement of the sidebar frame.
 
-        self.sideBarFrame = tkinter.Frame(self.root, height=WINDOW_HEIGHT,relief='sunken', borderwidth=1, width=200)
+        self.sideBarFrame = tkinter.Frame(self.root, height=WINDOW_HEIGHT,relief='sunken', borderwidth=1, width=200, background=SECONDARY_BACKGROUND_COLOR)
         self.sideBarFrame.grid(row=0, column=0, sticky='nsw')
         
 
@@ -643,13 +660,13 @@ class Client:
 
         # Creation and placement of the Users current chip counter under profile picture.
 
-        self.chipCounter = tkinter.Label(self.sideBarFrame, text=f'Chips: {self.userData["balance"]}', font=(FONT, 12))
+        self.chipCounter = tkinter.Label(self.sideBarFrame, text=f'Chips: {self.userData["balance"]}', font=(FONT, 12), background=SECONDARY_BACKGROUND_COLOR)
         self.chipCounter.grid(row=2, column=0, padx=20, columnspan=3, sticky='new', pady=10)
 
         
         # Creation and placement a tips section. 
 
-        TipsFrame = tkinter.LabelFrame(self.sideBarFrame, text="Tips", labelanchor="nw", bd=4, font=(FONT, 12), )
+        TipsFrame = tkinter.LabelFrame(self.sideBarFrame, text="Tips", labelanchor="nw", bd=4, font=(FONT, 12), background=SECONDARY_BACKGROUND_COLOR)
         TipsFrame.grid(row=3, column=0, columnspan=3, sticky='news', pady=10, padx=20)
 
 
@@ -657,13 +674,15 @@ class Client:
 
         with open("data\\tips.json", "r") as t:
             tip = json.load(t)
-            tip = tip[str(random.randint(0, len(tip)-1))]
+            tip = tip[str(random.randint(0, len(tip)-1))] if not self.BOOT_TIP else tip["0"]
             
            
         # Creation and placement of the tip label.
 
-        Tip = tkinter.Label(TipsFrame, text=tip, justify='center', wraplength=150, font=(FONT, 12))
-        Tip.grid(row=0, column=0, sticky='nws', pady=10)
+        Tip = tkinter.Label(TipsFrame, text=tip, justify='left', wraplength=150, font=(FONT, 12), background=SECONDARY_BACKGROUND_COLOR, padx=5)
+        Tip.grid(row=0, column=0, sticky='nws', pady=10,)
+
+        TipsFrame.columnconfigure(0, weight=1)
 
 
         # Quit Button Creation and placement
@@ -735,7 +754,7 @@ h.run()
 #TODO: Fix entry focusing issues - Some boxes left highlighted after focus is lost. -- Only on settings screen? -- # WOI
 #TODO: Make it more obvious that settings is accessed by clikcing on profile pic. - Tips Section on first boot? -- # DONE
 #TODO: Maybe increase size of main menu. Sidebar is bigger than expected -- # DONE
-#TODO: Distinguish quit button from the background. Blends in with the sidebar
+#TODO: Distinguish quit button from the background. Blends in with the sidebar -- # DONE
 #TODO: Fix multiple settings windows being allowed to be open after changing profile pic? Odd behavior. - not sure why this is -- # DONE
 #TODO: Find something to fill extra space in settings modal. Or decrease size of modal. -- # DONE
 #TODO: Find why username label flickers after clicking back from modal -- #  DONE
@@ -749,15 +768,24 @@ h.run()
 #TODO: Move all utils to utils.py 
 #TODO: Seperate files for each game? 
 #TODO: Add readme in github repo 
-#TODO: Sort out comments and docs
+#TODO: Sort out comments and docs -- # DONE
 #TODO: Add docstrings to all functions : espically utils -- # DONE
 #TODO: Add Acount Switching : Sign Out
 #TODO: Find out why creating a new account sometimes fails and messes up the db. -- # DONE // Maybe
 #TODO: Discord integration 
 #TODO: Fix sidebar changing size -- # DONE
-#TODO: Add binding so user can press enter to confirm instead of clicking buttons // QOL
+#TODO: Add binding so user can press enter to confirm instead of clicking buttons // QOL -- # DONE
 #TODO: Add in a system to get rid off old warning messages. Are starting to clog up the screen and could confuse users. // or stack them up and only show the last one.
 #TODO: Add in font settings in the settings modal. Might mess up sizing. // dont allow font size -- # CNC
+#TODO: Fix longer tips clipping -- # DONE
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
 #TODO: 
 #TODO: 
 #TODO: 
