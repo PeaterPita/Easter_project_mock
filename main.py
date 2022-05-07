@@ -213,6 +213,8 @@ class Client:
         # Allows user to change profile picture by selecting a new picture from their local disk. 
 
         def changePic():
+
+
             """changePic Asks the user to pick a new picture from their local disk. Also checks if the file is an image and larger than 100x100
             """
 
@@ -229,6 +231,7 @@ class Client:
                 return
 
             self.userData['ProfilePicture'] = newPic
+            self.settingsModal.lift()
 
             try:
                 pic = self.getProfilePic()
@@ -689,7 +692,7 @@ class Client:
 
         with open("data\\tips.json", "r") as t:
             tip = json.load(t)
-            tip = tip[str(random.randint(0, len(tip)))] if not self.BOOT_TIP else tip["0"]
+            tip = tip[str(random.randint(0, len(tip) - 1))] if not self.BOOT_TIP else tip["0"]
             
            
         # Creation and placement of the tip label.
@@ -783,7 +786,7 @@ h.run()
 #TODO: Add profile pic preview to settings modal -- # DONE
 #TODO: Fix changing profile pic so it doesnt update db untill user saves changes. : Allows for user to discard changed profile pic change if they want. -- # DONE
 #TODO: Add in fake users -- # DONE
-#TODO: Fix bug where setting modal gets hidden behind main screen when chaning profile pic. -- # WOI
+#TODO: Fix bug where setting modal gets hidden behind main screen when chaning profile pic. -- # DONE
 #TODO: Move all utils to utils.py 
 #TODO: Seperate files for each game? 
 #TODO: Add readme in github repo 
@@ -799,8 +802,8 @@ h.run()
 #TODO: Fix longer tips clipping -- # DONE
 #TODO: Look into why cold boot sometimes takes so long 
 #TODO: Fix tip not picking last tip in db -- # DONE
-#TODO: 
-#TODO: 
+#TODO: Find more tips to add to list
+#TODO: Look into _tkinter.TclError: invalid command name ".!toplevel2.!labelframe2.!entry"
 #TODO: 
 #TODO: 
 #TODO: 
