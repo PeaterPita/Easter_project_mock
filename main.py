@@ -81,7 +81,7 @@ class Client:
         if isinstance(widget, tkinter.Entry):
             widget.configure(relief="solid", borderwidth=2, bg='#fff', fg='#000')
         for child in parent.winfo_children():
-            # print(f'Child: {child}')
+            print(f'Child: {child}')
             if child != widget and child.winfo_class() == "Entry":
                 child.configure(relief="groove", borderwidth=1, bg=BACKGROUND_COLOR, fg='#fff')
 
@@ -379,9 +379,16 @@ class Client:
         self.settingsModal.rowconfigure(3, weight=1)
 
 
-        # Binding the focus event to FocusIn click.
+        # Binding the custom focus event to FocusIn click.
 
-        self.settingsModal.bind_all("<FocusIn>", lambda event: self.focus(self.settingsModal))
+        self.settingsModal.bind("<FocusIn>", lambda event: customFocus())
+
+
+        # Need to use a in the middle func to get the children of the labelFrames. Not an efficent work around but it hasnt broke yet
+
+        def customFocus():
+            for labelFrames in self.settingsModal.winfo_children():
+                self.focus(labelFrames)
 
 
     # Auth Manages the login and registration of the user as well as the modal.
@@ -505,7 +512,7 @@ class Client:
         # Username Label and Entry Creation
 
         userNameLabel = tkinter.Label(self.logInModal, text="Username: ", bg=BACKGROUND_COLOR, fg='#fff')
-        userNameEntry = tkinter.Entry(self.logInModal,  bg='#1d1d1d', fg='#fff', relief="groove" )
+        userNameEntry = tkinter.Entry(self.logInModal,  bg=BACKGROUND_COLOR, fg='#fff', relief="groove" )
         
 
         # Password Label and Entry Creation
@@ -600,16 +607,24 @@ class Client:
         
         # Binding the focus event to FocusIn click.
 
-        self.logInModal.bind_all("<FocusIn>", lambda event: self.focus(self.logInModal))
+        # self.logInModal.bind_all("<FocusIn>", lambda event: self.focus(self.logInModal))
+
+        for child in self.logInModal.winfo_children():
+            if isinstance(child, tkinter.Entry):
+                child.bind("<FocusIn>", lambda event: self.focus(self.logInModal))
 
 
         # Binding the checkLogin to the enter key being pressed while the password entry is focused. // QOL means the user can just use the keybaord to navigate
 
         passwordEntry.bind("<Return>", lambda event: checkLogin(userNameEntry.get(), passwordEntry.get()))
         
+
     # Function to create the main menu.
 
     def mainMenu(self):
+
+
+        
 
 
         # Call getProfilePic for later
@@ -691,10 +706,14 @@ class Client:
         QuitButton.grid(row=4, column=0, sticky='sew', padx=10, pady=10, columnspan=3)
 
 
+
+
+
+
+
         # Stop sidebar from shrinking or expanding to fit the content. Now the sidebar is always 200 SU
 
         self.sideBarFrame.grid_propagate(False)
-
 
 
     # Func to start client. Starts auth first.
@@ -715,8 +734,6 @@ class Client:
         self.root.mainloop()
 
 
-
-
 # Just making test client and running it.
 #TODO: Could be turned into multiplayer. would need to move processing to server script.
 
@@ -731,6 +748,7 @@ h.run()
 # DONE - Completed 
 # WOI - Working on it
 # CNC - Cannnot complete
+# DNTD - Decided not to do
 # TODO - To do
 
 
@@ -747,11 +765,12 @@ h.run()
 #TODO: Xp and Levling system. - wayy further done could unlock.. things?
 #TODO: Maybe figure out better way to update db specif items. Very slow atm with lots of seperate instances of opening
 #TODO: Look into if python can connect to mongoDB -- # DONE -- will be too much work to transfer over now. Hopefully local json is good enough
-#TODO: Make copy of userProfilePic in /images/backup incase pic is deleted from local disk
+#TODO: Make copy of userProfilePic in /images/backup incase pic is deleted from local disk -- # DNTD
 #TODO: Sort out all the fonts and sizes - some buttons still clipping -- # DONE
 #TODO: Find a suitable theme - do like the dark gray and white atm. Not very casino looking tho.
 #TODO: When changing username add the same check as when making a new account. -- # DONE
-#TODO: Fix entry focusing issues - Some boxes left highlighted after focus is lost. -- Only on settings screen? -- # WOI
+#TODO: Fix entry focusing issues - Some boxes left highlighted after focus is lost. -- Only on settings screen? -- # DONE
+#TODO: Find out how to not let focus run once top level is destroyed. -- # DONE
 #TODO: Make it more obvious that settings is accessed by clikcing on profile pic. - Tips Section on first boot? -- # DONE
 #TODO: Maybe increase size of main menu. Sidebar is bigger than expected -- # DONE
 #TODO: Distinguish quit button from the background. Blends in with the sidebar -- # DONE
@@ -770,15 +789,15 @@ h.run()
 #TODO: Add readme in github repo 
 #TODO: Sort out comments and docs -- # DONE
 #TODO: Add docstrings to all functions : espically utils -- # DONE
-#TODO: Add Acount Switching : Sign Out
+#TODO: Add Acount Switching : Sign Out -- # DNTD
 #TODO: Find out why creating a new account sometimes fails and messes up the db. -- # DONE // Maybe
 #TODO: Discord integration 
 #TODO: Fix sidebar changing size -- # DONE
 #TODO: Add binding so user can press enter to confirm instead of clicking buttons // QOL -- # DONE
-#TODO: Add in a system to get rid off old warning messages. Are starting to clog up the screen and could confuse users. // or stack them up and only show the last one.
+#TODO: Add in a system to get rid off old warning messages. Are starting to clog up the screen and could confuse users. // or stack them up and only show the last one. -- # CNC
 #TODO: Add in font settings in the settings modal. Might mess up sizing. // dont allow font size -- # CNC
 #TODO: Fix longer tips clipping -- # DONE
-#TODO: 
+#TODO: Look into why cold boot sometimes takes so long 
 #TODO: 
 #TODO: 
 #TODO: 
