@@ -21,7 +21,7 @@ WINDOW_HEIGHT = 600
 BACKGROUND_COLOR = "#1d1d1d"
 SECONDARY_BACKGROUND_COLOR = "#f5f5f5"
 FOREGROUND_COLOR = "#ffffff"
-ACCENT_COLOR = "#ff0000"
+ACCENT_COLOR = "#6c0eed"
 
 
 
@@ -31,6 +31,12 @@ FONT = 'Helvetica'
 # Initalize the client class ### Maybe allowing for multiplayer? only lan with ports?
 
 class Client:
+
+
+    def _create_circle(self, x, y, r, **kwargs):
+        return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)
+    tkinter.Canvas.create_circle = _create_circle
+
 
 
     # Initialize the client class
@@ -727,11 +733,28 @@ class Client:
         rightArrow.grid(row=1, column=2, sticky='nes', padx=(0,20))
 
 
+        HowToPlay = tkinter.Button(self.mainMenuFrame, text="How to Play", font=(FONT, 12), background=ACCENT_COLOR, foreground=FOREGROUND_COLOR, )
+        HowToPlay.grid(row=2, column=1, sticky='', )
+
+
+        levelCanvas = tkinter.Canvas(self.mainMenuFrame, background=BACKGROUND_COLOR, border=0, height=50, highlightthickness=0)
+        levelCanvas.grid(row=0, column=1, sticky='n', )
+
+        levelCanvas.create_circle(100, 25, 20, fill=BACKGROUND_COLOR, outline=SECONDARY_BACKGROUND_COLOR)
+
+        levelCanvas.create_text(100, 25, text="1", font=(FONT, 12), fill=SECONDARY_BACKGROUND_COLOR)
+
+        levelCanvas.create_line(100, 5, 300, 5, fill=SECONDARY_BACKGROUND_COLOR)
+        levelCanvas.create_line(100, 45, 300, 45, fill=SECONDARY_BACKGROUND_COLOR)
 
 
 
+        
 
 
+
+        levelCanvas.create_arc((320, 45, 280, 5), start=0, extent=90 ,outline=SECONDARY_BACKGROUND_COLOR, style='arc')
+        levelCanvas.create_arc((200+120, 45, 200+80, 5), start=270, extent=90 ,outline=SECONDARY_BACKGROUND_COLOR, style='arc')
 
 
 
@@ -854,7 +877,7 @@ h.run()
 #TODO: maybe sub catergorize images to /images/games/<game>/ and /images/users
 #TODO: add transition when switching games -- # CNC
 #TODO: users level and xp at top of mainscreen instead of in sidebar?? Would fill white space and could use canvas -- # WOI
-#TODO: 
+#TODO: Look into Python-markdown and tkHTML
 #TODO: 
 #TODO: 
 #TODO: 
