@@ -5,6 +5,7 @@ from tkinter import messagebox
 import json
 from PIL import Image, ImageTk
 from pathlib import Path
+import math
 import time
 from tkinter.filedialog import askopenfilename
 import random
@@ -14,6 +15,7 @@ import random
 casinoGames = ["Blackjack", "Poker", "Dice", "Slot Machine"]
 WINDOOW_WIDTH = 1000
 WINDOW_HEIGHT = 600
+MAX_LEVEL = 99
 
 
 # COLORS
@@ -500,6 +502,8 @@ class Client:
                                         "UserID": (int(data[-1]['UserID'])) + 1,
                                         "username": username,
                                         "password": password,
+                                        "lvl": 1,
+                                        "xp":0,
                                         "balance": 100,
                                         "ProfilePicture": "images/default.jpg"
                                         })
@@ -740,31 +744,57 @@ class Client:
         levelCanvas = tkinter.Canvas(self.mainMenuFrame, background=BACKGROUND_COLOR, border=0, height=50, highlightthickness=0)
         levelCanvas.grid(row=0, column=1, sticky='n', )
 
-        levelCanvas.create_circle(100, 25, 20, fill=BACKGROUND_COLOR, outline=SECONDARY_BACKGROUND_COLOR)
 
-        levelCanvas.create_text(100, 25, text="1", font=(FONT, 12), fill=SECONDARY_BACKGROUND_COLOR)
 
-        levelCanvas.create_line(100, 5, 300, 5, fill=SECONDARY_BACKGROUND_COLOR)
-        levelCanvas.create_line(100, 45, 300, 45, fill=SECONDARY_BACKGROUND_COLOR)
 
+        width=200
+        radius=20
+        top = 5
+        height = 40
+        xoffset = 100
+
+        baseXP = 100
+
+
+
+        xpamount = levelCanvas.create_text(xoffset+0.5*width, top+radius, text='Loading...', font=(FONT, 12),  fill=SECONDARY_BACKGROUND_COLOR)
+
+
+
+        if self.userData["lvl"] == MAX_LEVEL:
+            amountToLevel = self.userData["xp"]
+            levelCanvas.itemconfig(xpamount, text='Max Level')
+        else:
+            for i in range(0, self.userData["lvl"] + 1):
+                amountToLevel = int( math.floor( baseXP * ( i ** 1.5) ) ) # eq from https://answers.unity.com/questions/1510240/level-and-xp-system.html
+                levelCanvas.itemconfig(xpamount, text=f'{self.userData["xp"]}/{amountToLevel}xp')
+
+
+
+
+        def getLevelBarPercentage():
+            return int( (self.userData["xp"] / amountToLevel) * width+radius )
+
+
+
+
+        xpBarFill = levelCanvas.create_rectangle(xoffset, top, xoffset+getLevelBarPercentage(), top+height, fill=ACCENT_COLOR, outline=ACCENT_COLOR)
 
 
         
 
-
-
-        levelCanvas.create_arc((320, 45, 280, 5), start=0, extent=90 ,outline=SECONDARY_BACKGROUND_COLOR, style='arc')
-        levelCanvas.create_arc((200+120, 45, 200+80, 5), start=270, extent=90 ,outline=SECONDARY_BACKGROUND_COLOR, style='arc')
-
-
-
-
+        levelCanvas.create_line(xoffset, top, width+xoffset, top, fill=SECONDARY_BACKGROUND_COLOR)
+        levelCanvas.create_line(xoffset, height+top, width+xoffset, height+top, fill=SECONDARY_BACKGROUND_COLOR)
+        levelCanvas.create_arc((width+xoffset + radius, top+height, width+60+radius, top), start=0, extent=90 ,outline=SECONDARY_BACKGROUND_COLOR,  style='arc')
+        levelCanvas.create_arc((width+xoffset + radius, top+height, width+60+radius, top), start=270, extent=90 ,outline=SECONDARY_BACKGROUND_COLOR, style='arc')
+        
 
 
 
+        levelCanvas.create_circle(xoffset, radius+top, radius, fill=BACKGROUND_COLOR, outline=SECONDARY_BACKGROUND_COLOR)
+        playerLevel = levelCanvas.create_text(xoffset, radius+top, text=str(self.userData["lvl"]), font=(FONT, 12), fill=SECONDARY_BACKGROUND_COLOR)
 
-
-
+        levelCanvas.tag_raise(xpamount)
 
 
 
@@ -817,6 +847,7 @@ h.run()
 # WOI - Working on it
 # CNC - Cannnot complete
 # DNTD - Decided not to do
+# IMP - Important
 # TODO - To do
 
 
@@ -825,10 +856,10 @@ h.run()
 #TODO: Limit allowed profile pics to min size. 100x100? -- # DONE
 #TODO: Figure out what to put in sidebar white space - Tips? Leaderboard? -- # DONE
 #TODO: Look into multiplayer support. - Game is already kinda set up for it. Just need server and porting -- # DNTD
-#TODO: Actually make the casino games
+#TODO: Actually make the casino games -- # IMP
 #TODO: Make game selection menu - Could do list of buttons or one button that changes. - Look at old casino for how to do that! -- # WOI
 #TODO: Proper dev debug menu
-#TODO: Xp and Levling system. - wayy further done could unlock.. things?
+#TODO: Xp and Levling system. - wayy further done could unlock.. things? -- # WOI
 #TODO: Maybe figure out better way to update db specif items. Very slow atm with lots of seperate instances of opening
 #TODO: Look into if python can connect to mongoDB -- # DONE -- will be too much work to transfer over now. Hopefully local json is good enough
 #TODO: Make copy of userProfilePic in /images/backup incase pic is deleted from local disk -- # DNTD
@@ -866,7 +897,7 @@ h.run()
 #TODO: Fix tip not picking last tip in db -- # DONE
 #TODO: Find more tips to add to list
 #TODO: Look into _tkinter.TclError: invalid command name ".!toplevel2.!labelframe2.!entry" -- # DONE // forgot a return statment
-#TODO: Look into password hashing 
+#TODO: Look into password hashing -- # IMP
 #TODO: add comments to new game selection section 
 #TODO: Look into removing the highlighting when clicking the arrow buttons when switching games -- # WOI
 #TODO: add 'How to play' button to main menu 
@@ -876,8 +907,27 @@ h.run()
 #TODO: Add failsafes in case cover images dont load
 #TODO: maybe sub catergorize images to /images/games/<game>/ and /images/users
 #TODO: add transition when switching games -- # CNC
-#TODO: users level and xp at top of mainscreen instead of in sidebar?? Would fill white space and could use canvas -- # WOI
+#TODO: users level and xp at top of mainscreen instead of in sidebar?? Would fill white space and could use canvas -- # DONE
 #TODO: Look into Python-markdown and tkHTML
+#TODO: fill xp bar based on xp % -- # DONE
+#TODO: fix clipping issues once xpbar gets near max
+#TODO: add max level and change bar to represent that -- # DONE
+#TODO: Fix settings modal getting hidden behind other windows if user declines to discard changes 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
 #TODO: 
 #TODO: 
 #TODO: 
