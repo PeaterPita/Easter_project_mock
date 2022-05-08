@@ -15,15 +15,15 @@ import random
 casinoGames = ["Blackjack", "Poker", "Dice", "Slot Machine"]
 WINDOOW_WIDTH = 1000
 WINDOW_HEIGHT = 600
-MAX_LEVEL = 99
+MAX_LEVEL = 100
 
 
 # COLORS
 
-BACKGROUND_COLOR = "#1d1d1d"
-SECONDARY_BACKGROUND_COLOR = "#f5f5f5"
-FOREGROUND_COLOR = "#ffffff"
-ACCENT_COLOR = "#6c0eed"
+BACKGROUND_COLOR = "#1d1d1d" # dark gray  black
+SECONDARY_BACKGROUND_COLOR = "#f5f5f5" #rayish white
+FOREGROUND_COLOR = "#ffffff" # white
+ACCENT_COLOR = "#6c0eed" # Purple
 
 
 
@@ -236,6 +236,7 @@ class Client:
 
             if newPicWIDTH < 100 or newPicHEIGHT < 100:
                 self.warning(self.settingsModal, "Profile Picture must be miniuim 100x100")
+                self.settingsModal.lift()
                 return
 
             self.userData['ProfilePicture'] = newPic
@@ -259,6 +260,8 @@ class Client:
             if messagebox.askokcancel("Close settings", "Are you sure you want to close settings without saving? Your changes will not be saved"):
                 self.settingsModal.destroy()
                 self.profilePic.config(state='normal')
+            else:
+                self.settingsModal.lift()
 
 
         # bind discard to the 'X' button on the top right of the window.
@@ -719,21 +722,21 @@ class Client:
         TipsFrame.columnconfigure(0, weight=1)
 
 
-        GameButton = tkinter.Button(self.mainMenuFrame, text=casinoGames[0], font=(FONT, 12), background='gray', justify='center', )
+        GameButton = tkinter.Button(self.mainMenuFrame, text=casinoGames[0], font=(FONT, 12), background='gray', justify='center', activebackground='gray' )
         GameButton.grid(row=1, column=1, sticky='nwes', )
 
         self.mainMenuFrame.columnconfigure(0, weight=0)
         self.mainMenuFrame.columnconfigure(1, weight=5)
         self.mainMenuFrame.columnconfigure(2, weight=0)
         self.mainMenuFrame.rowconfigure(0, weight=1)
-        self.mainMenuFrame.rowconfigure(1, weight=3)
-        self.mainMenuFrame.rowconfigure(2, weight=1)
+        self.mainMenuFrame.rowconfigure(1, weight=5)
+        self.mainMenuFrame.rowconfigure(2, weight=2)
 
 
-        leftArrow = tkinter.Button(self.mainMenuFrame, text="<", font=(FONT, 36), background=BACKGROUND_COLOR, justify='center', border=0, foreground=FOREGROUND_COLOR, command=lambda: flipGame("left"))
+        leftArrow = tkinter.Button(self.mainMenuFrame, text="<", font=(FONT, 36), background=BACKGROUND_COLOR, justify='center', border=0, foreground=FOREGROUND_COLOR, command=lambda: flipGame("left"), activebackground=BACKGROUND_COLOR, activeforeground=FOREGROUND_COLOR)
         leftArrow.grid(row=1, column=0, sticky='nws', padx=(20, 0))
 
-        rightArrow = tkinter.Button(self.mainMenuFrame, text=">", font=(FONT, 36), justify='center', border=0, background=BACKGROUND_COLOR, foreground=FOREGROUND_COLOR, command=lambda: flipGame("right"))
+        rightArrow = tkinter.Button(self.mainMenuFrame, text=">", font=(FONT, 36), justify='center', border=0, background=BACKGROUND_COLOR, foreground=FOREGROUND_COLOR, command=lambda: flipGame("right"), activebackground=BACKGROUND_COLOR, activeforeground=FOREGROUND_COLOR)
         rightArrow.grid(row=1, column=2, sticky='nes', padx=(0,20))
 
 
@@ -773,7 +776,7 @@ class Client:
 
 
         def getLevelBarPercentage():
-            return int( (self.userData["xp"] / amountToLevel) * width+radius )
+            return int( (self.userData["xp"] / amountToLevel ) if amountToLevel > 0 else 1 * width+radius )
 
 
 
@@ -901,21 +904,21 @@ h.run()
 #TODO: add comments to new game selection section 
 #TODO: Look into removing the highlighting when clicking the arrow buttons when switching games -- # WOI
 #TODO: add 'How to play' button to main menu 
-#TODO: Find something to fill white space above gameButton
+#TODO: Find something to fill white space above gameButton -- # DONE
 #TODO: Make/Find full cover images for each game
 #TODO: plan out how the games will actuall be played. On root screen? or in a modal?
 #TODO: Add failsafes in case cover images dont load
-#TODO: maybe sub catergorize images to /images/games/<game>/ and /images/users
+#TODO: maybe sub catergorize images to /images/games/<game>/ and /images/users -- # DONE
 #TODO: add transition when switching games -- # CNC
 #TODO: users level and xp at top of mainscreen instead of in sidebar?? Would fill white space and could use canvas -- # DONE
 #TODO: Look into Python-markdown and tkHTML
 #TODO: fill xp bar based on xp % -- # DONE
 #TODO: fix clipping issues once xpbar gets near max
 #TODO: add max level and change bar to represent that -- # DONE
-#TODO: Fix settings modal getting hidden behind other windows if user declines to discard changes 
-#TODO: 
-#TODO: 
-#TODO: 
+#TODO: Fix settings modal getting hidden behind other windows if user declines to discard changes -- # DONE
+#TODO: Fix spacing on main screen between canvas and game. canvas shouldnt be so big -- # DONE
+#TODO: settings modal also gets hidden if seleted profile pic is too small -- # DONE
+#TODO: Fix division by 0 error if xp = 0 -- # DONE
 #TODO: 
 #TODO: 
 #TODO: 
