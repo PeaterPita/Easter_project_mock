@@ -11,7 +11,7 @@ import random
 
 # Constants
 
-casinoGames = ["Blackjack", "Poker", "Dice"]
+casinoGames = ["Blackjack", "Poker", "Dice", "Slot Machine"]
 WINDOOW_WIDTH = 1000
 WINDOW_HEIGHT = 600
 
@@ -628,7 +628,12 @@ class Client:
     def mainMenu(self):
 
 
-        
+        def flipGame(side):
+            index = casinoGames.index(GameButton.cget("text"))
+            if side == "right":
+                GameButton.config(text=casinoGames [index + 1 if index < len(casinoGames) - 1 else -len(casinoGames)] )  
+            else:
+                GameButton.config(text=casinoGames [index - 1 if index > 0 else len(casinoGames) - 1] )
 
 
         # Call getProfilePic for later
@@ -644,13 +649,13 @@ class Client:
 
         # Creation and placement of the main frame
 
-        self.mainMenuFrame = tkinter.Frame(self.root, bg='#1d1d1d')
+        self.mainMenuFrame = tkinter.Frame(self.root, bg=BACKGROUND_COLOR, )
         self.mainMenuFrame.grid(row=0, column=1, sticky='nesw')
 
 
         # Column and Row config for the main screen
 
-        self.root.columnconfigure(0, weight=1)
+        self.root.columnconfigure(0, weight=0)
         self.root.columnconfigure(1, weight=8)
         self.root.rowconfigure(0, weight=1)
 
@@ -704,15 +709,51 @@ class Client:
         TipsFrame.columnconfigure(0, weight=1)
 
 
+        GameButton = tkinter.Button(self.mainMenuFrame, text=casinoGames[0], font=(FONT, 12), background='gray', justify='center', )
+        GameButton.grid(row=1, column=1, sticky='nwes', )
+
+        self.mainMenuFrame.columnconfigure(0, weight=0)
+        self.mainMenuFrame.columnconfigure(1, weight=5)
+        self.mainMenuFrame.columnconfigure(2, weight=0)
+        self.mainMenuFrame.rowconfigure(0, weight=1)
+        self.mainMenuFrame.rowconfigure(1, weight=3)
+        self.mainMenuFrame.rowconfigure(2, weight=1)
+
+
+        leftArrow = tkinter.Button(self.mainMenuFrame, text="<", font=(FONT, 36), background=BACKGROUND_COLOR, justify='center', border=0, foreground=FOREGROUND_COLOR, command=lambda: flipGame("left"))
+        leftArrow.grid(row=1, column=0, sticky='nws', padx=(20, 0))
+
+        rightArrow = tkinter.Button(self.mainMenuFrame, text=">", font=(FONT, 36), justify='center', border=0, background=BACKGROUND_COLOR, foreground=FOREGROUND_COLOR, command=lambda: flipGame("right"))
+        rightArrow.grid(row=1, column=2, sticky='nes', padx=(0,20))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         # Quit Button Creation and placement
 
         QuitButton = tkinter.Button(self.sideBarFrame, text="Quit", command=self.on_closing, )
         QuitButton.grid(row=4, column=0, sticky='sew', padx=10, pady=10, columnspan=3)
-
-
-
-
-
 
 
         # Stop sidebar from shrinking or expanding to fit the content. Now the sidebar is always 200 SU
@@ -756,15 +797,13 @@ h.run()
 # TODO - To do
 
 
-
-
 #TODO: make settings actually look good. Placements are a bit weird atm -- # DONE
 #TODO: Allowing for more types of images for pics -- # DONE
 #TODO: Limit allowed profile pics to min size. 100x100? -- # DONE
 #TODO: Figure out what to put in sidebar white space - Tips? Leaderboard? -- # DONE
 #TODO: Look into multiplayer support. - Game is already kinda set up for it. Just need server and porting -- # DNTD
 #TODO: Actually make the casino games
-#TODO: Make game selection menu - Could do list of buttons or one button that changes. - Look at old casino for how to do that!
+#TODO: Make game selection menu - Could do list of buttons or one button that changes. - Look at old casino for how to do that! -- # WOI
 #TODO: Proper dev debug menu
 #TODO: Xp and Levling system. - wayy further done could unlock.. things?
 #TODO: Maybe figure out better way to update db specif items. Very slow atm with lots of seperate instances of opening
@@ -795,7 +834,6 @@ h.run()
 #TODO: Add docstrings to all functions : espically utils -- # DONE
 #TODO: Add Acount Switching : Sign Out -- # DNTD
 #TODO: Find out why creating a new account sometimes fails and messes up the db. -- # DONE // Maybe
-#TODO: Discord integration 
 #TODO: Fix sidebar changing size -- # DONE
 #TODO: Add binding so user can press enter to confirm instead of clicking buttons // QOL -- # DONE
 #TODO: Add in a system to get rid off old warning messages. Are starting to clog up the screen and could confuse users. // or stack them up and only show the last one. -- # CNC
@@ -805,8 +843,17 @@ h.run()
 #TODO: Fix tip not picking last tip in db -- # DONE
 #TODO: Find more tips to add to list
 #TODO: Look into _tkinter.TclError: invalid command name ".!toplevel2.!labelframe2.!entry" -- # DONE // forgot a return statment
-#TODO: 
-#TODO: 
+#TODO: Look into password hashing 
+#TODO: add comments to new game selection section 
+#TODO: Look into removing the highlighting when clicking the arrow buttons when switching games -- # WOI
+#TODO: add 'How to play' button to main menu 
+#TODO: Find something to fill white space above gameButton
+#TODO: Make/Find full cover images for each game
+#TODO: plan out how the games will actuall be played. On root screen? or in a modal?
+#TODO: Add failsafes in case cover images dont load
+#TODO: maybe sub catergorize images to /images/games/<game>/ and /images/users
+#TODO: add transition when switching games -- # CNC
+#TODO: users level and xp at top of mainscreen instead of in sidebar?? Would fill white space and could use canvas -- # WOI
 #TODO: 
 #TODO: 
 #TODO: 
