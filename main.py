@@ -9,6 +9,8 @@ import math
 import time
 from tkinter.filedialog import askopenfilename
 import random
+import markdown
+import webbrowser
 
 # Constants
 
@@ -35,12 +37,6 @@ FONT = 'Helvetica'
 class Client:
 
 
-    def _create_circle(self, x, y, r, **kwargs):
-        return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)
-    tkinter.Canvas.create_circle = _create_circle
-
-
-
     # Initialize the client class
 
     def __init__(self):
@@ -54,6 +50,28 @@ class Client:
         self.root.resizable(False, False)
         self.root.configure(background=BACKGROUND_COLOR)
         self.BOOT_TIP = False
+
+
+    def _create_circle(self, x, y, r, **kwargs):
+        return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)
+    tkinter.Canvas.create_circle = _create_circle
+
+
+    def howToPlay(self, game):
+        with open(f'Games/{game.split(" ")[0]}/HTP.md', 'r') as f:
+            html = markdown.markdown(f.read())
+
+        f = open('HTP.html', 'w')
+        f.write(html)
+        f.flush()
+
+        webbrowser.open('HTP.html')
+
+
+
+
+
+
 
 
     # Function to get the users profile pic. If the original file is not found, it will return the default profile pic.
@@ -190,7 +208,11 @@ class Client:
         """
 
 
+        
+
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
+            f = open('HTP.html', 'w')
+            f.write("")
             self.root.destroy()
 
 
@@ -722,7 +744,7 @@ class Client:
         TipsFrame.columnconfigure(0, weight=1)
 
 
-        GameButton = tkinter.Button(self.mainMenuFrame, text=casinoGames[0], font=(FONT, 12), background='gray', justify='center', activebackground='gray' )
+        GameButton = tkinter.Button(self.mainMenuFrame, text=casinoGames[0], font=(FONT, 36), background='gray', justify='center', activebackground='gray'  )
         GameButton.grid(row=1, column=1, sticky='nwes', )
 
         self.mainMenuFrame.columnconfigure(0, weight=0)
@@ -740,7 +762,7 @@ class Client:
         rightArrow.grid(row=1, column=2, sticky='nes', padx=(0,20))
 
 
-        HowToPlay = tkinter.Button(self.mainMenuFrame, text="How to Play", font=(FONT, 12), background=ACCENT_COLOR, foreground=FOREGROUND_COLOR, )
+        HowToPlay = tkinter.Button(self.mainMenuFrame, text="How to Play", font=(FONT, 12), background=ACCENT_COLOR, foreground=FOREGROUND_COLOR, command=lambda: self.howToPlay(GameButton.cget('text')), activebackground=ACCENT_COLOR, activeforeground=FOREGROUND_COLOR)
         HowToPlay.grid(row=2, column=1, sticky='', )
 
 
@@ -903,9 +925,9 @@ h.run()
 #TODO: Look into password hashing -- # IMP
 #TODO: add comments to new game selection section 
 #TODO: Look into removing the highlighting when clicking the arrow buttons when switching games -- # WOI
-#TODO: add 'How to play' button to main menu 
+#TODO: add 'How to play' button to main menu -- # DONE
 #TODO: Find something to fill white space above gameButton -- # DONE
-#TODO: Make/Find full cover images for each game
+#TODO: Make/Find full cover images for each game // > 780 x 442
 #TODO: plan out how the games will actuall be played. On root screen? or in a modal?
 #TODO: Add failsafes in case cover images dont load
 #TODO: maybe sub catergorize images to /images/games/<game>/ and /images/users -- # DONE
@@ -919,9 +941,9 @@ h.run()
 #TODO: Fix spacing on main screen between canvas and game. canvas shouldnt be so big -- # DONE
 #TODO: settings modal also gets hidden if seleted profile pic is too small -- # DONE
 #TODO: Fix division by 0 error if xp = 0 -- # DONE
-#TODO: 
-#TODO: 
-#TODO: 
+#TODO: add how to play functionality -- # DONE
+#TODO: finish making the markdown files for all games -- # WOI
+#TODO: add check to see if theres network connection if not disable how to play button 
 #TODO: 
 #TODO: 
 #TODO: 
