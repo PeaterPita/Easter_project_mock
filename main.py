@@ -11,6 +11,21 @@ from tkinter.filedialog import askopenfilename
 import random
 import markdown
 import webbrowser
+import socket
+import os
+
+# import Games.BlackJack.BlackJack as BlackJack
+for _ in os.listdir('./Games'):
+    print(f'Loading {_}')
+    try:
+        exec(f"import Games.{_}.{_} as {_}")
+        print(f'Loaded {_}')
+    except Exception as e:
+        print(f'Failed to load {_}\n{e}')
+
+
+
+
 
 # Constants
 
@@ -35,6 +50,9 @@ FONT = 'Helvetica'
 # Initalize the client class ### Maybe allowing for multiplayer? only lan with ports?
 
 class Client:
+
+
+
 
 
     # Initialize the client class
@@ -67,7 +85,14 @@ class Client:
 
         webbrowser.open('HTP.html')
 
-
+    def testConnection(self):
+        try:
+            s = socket.create_connection(('1.1.1.1', 80))
+            s.close()
+            return True
+        except OSError:
+            pass
+        return False
 
 
 
@@ -183,7 +208,7 @@ class Client:
             
     # Main warning function. Used to warn the user of any errors. Only need to supply parent and message
 
-    def warning(self, parent, message, bg='red', fg='#fff', fontsize=8, row=5, sticky='ew'):
+    def warning(self, parent, message, bg='red', fg='#fff', fontsize=8, row=5, sticky='ew', columnspan=2):
         """warning Displays a warning message to the user.
 
         Args:
@@ -197,8 +222,8 @@ class Client:
         """
 
 
-        warn = tkinter.Label(parent, text=message, bg=bg, fg=fg,border=5, relief="raised", font=(FONT, fontsize), padx=10, pady=10)
-        warn.grid(row=row, column=0, sticky=sticky, padx=20, columnspan=2)
+        warn = tkinter.Label(parent, text=message, bg=bg, fg=fg,border=5, relief="raised", font=(FONT, fontsize), padx=10, pady=10,)
+        warn.grid(row=row, column=0, sticky=sticky, padx=20, columnspan=columnspan)
 
 
     # Closing Manager For root
@@ -744,7 +769,7 @@ class Client:
         TipsFrame.columnconfigure(0, weight=1)
 
 
-        GameButton = tkinter.Button(self.mainMenuFrame, text=casinoGames[0], font=(FONT, 36), background='gray', justify='center', activebackground='gray'  )
+        GameButton = tkinter.Button(self.mainMenuFrame, text=casinoGames[0], font=(FONT, 36), background='gray', justify='center', activebackground='gray', command=lambda: BlackJack.test(self))
         GameButton.grid(row=1, column=1, sticky='nwes', )
 
         self.mainMenuFrame.columnconfigure(0, weight=0)
@@ -753,6 +778,7 @@ class Client:
         self.mainMenuFrame.rowconfigure(0, weight=1)
         self.mainMenuFrame.rowconfigure(1, weight=5)
         self.mainMenuFrame.rowconfigure(2, weight=2)
+        # self.mainMenuFrame.rowconfigure(5, weight=1)
 
 
         leftArrow = tkinter.Button(self.mainMenuFrame, text="<", font=(FONT, 36), background=BACKGROUND_COLOR, justify='center', border=0, foreground=FOREGROUND_COLOR, command=lambda: flipGame("left"), activebackground=BACKGROUND_COLOR, activeforeground=FOREGROUND_COLOR)
@@ -774,15 +800,15 @@ class Client:
 
         width=200
         radius=20
-        top = 5
-        height = 40
+        top = 10 #5
+        height = 30 # 40
         xoffset = 100
 
         baseXP = 100
 
 
 
-        xpamount = levelCanvas.create_text(xoffset+0.5*width, top+radius, text='Loading...', font=(FONT, 12),  fill=SECONDARY_BACKGROUND_COLOR)
+        xpamount = levelCanvas.create_text(xoffset+0.5*width, 5+radius, text='Loading...', font=(FONT, 12),  fill=SECONDARY_BACKGROUND_COLOR)
 
 
 
@@ -816,8 +842,8 @@ class Client:
 
 
 
-        levelCanvas.create_circle(xoffset, radius+top, radius, fill=BACKGROUND_COLOR, outline=SECONDARY_BACKGROUND_COLOR)
-        playerLevel = levelCanvas.create_text(xoffset, radius+top, text=str(self.userData["lvl"]), font=(FONT, 12), fill=SECONDARY_BACKGROUND_COLOR)
+        levelCanvas.create_circle(xoffset, radius+5, radius, fill=BACKGROUND_COLOR, outline=SECONDARY_BACKGROUND_COLOR)
+        playerLevel = levelCanvas.create_text(xoffset, radius+5, text=str(self.userData["lvl"]), font=(FONT, 12), fill=SECONDARY_BACKGROUND_COLOR)
 
         levelCanvas.tag_raise(xpamount)
 
@@ -837,6 +863,11 @@ class Client:
         # Stop sidebar from shrinking or expanding to fit the content. Now the sidebar is always 200 SU
 
         self.sideBarFrame.grid_propagate(False)
+
+        if not self.testConnection():
+            HowToPlay.config(state='disabled')
+            self.warning(self.mainMenuFrame, "'How to Play' cannot work without a stable internet connection.\nPlease check your connection and relauch the game.", sticky='',columnspan=3, fontsize=16, row=2)
+
 
 
     # Func to start client. Starts auth first.
@@ -924,7 +955,7 @@ h.run()
 #TODO: Look into _tkinter.TclError: invalid command name ".!toplevel2.!labelframe2.!entry" -- # DONE // forgot a return statment
 #TODO: Look into password hashing -- # IMP
 #TODO: add comments to new game selection section 
-#TODO: Look into removing the highlighting when clicking the arrow buttons when switching games -- # WOI
+#TODO: Look into removing the highlighting when clicking the arrow buttons when switching games -- # DONE
 #TODO: add 'How to play' button to main menu -- # DONE
 #TODO: Find something to fill white space above gameButton -- # DONE
 #TODO: Make/Find full cover images for each game // > 780 x 442
@@ -933,7 +964,7 @@ h.run()
 #TODO: maybe sub catergorize images to /images/games/<game>/ and /images/users -- # DONE
 #TODO: add transition when switching games -- # CNC
 #TODO: users level and xp at top of mainscreen instead of in sidebar?? Would fill white space and could use canvas -- # DONE
-#TODO: Look into Python-markdown and tkHTML
+#TODO: Look into Python-markdown and tkHTML -- # CNC opened md in web broswer instead
 #TODO: fill xp bar based on xp % -- # DONE
 #TODO: fix clipping issues once xpbar gets near max
 #TODO: add max level and change bar to represent that -- # DONE
@@ -943,7 +974,7 @@ h.run()
 #TODO: Fix division by 0 error if xp = 0 -- # DONE
 #TODO: add how to play functionality -- # DONE
 #TODO: finish making the markdown files for all games -- # WOI
-#TODO: add check to see if theres network connection if not disable how to play button 
+#TODO: add check to see if theres network connection if not disable 'how to play button' -- # DONE
 #TODO: 
 #TODO: 
 #TODO: 
