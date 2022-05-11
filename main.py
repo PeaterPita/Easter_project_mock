@@ -14,14 +14,6 @@ import webbrowser
 import socket
 import os
 
-# import Games.BlackJack.BlackJack as BlackJack
-for _ in os.listdir('./Games'):
-    print(f'Loading {_}')
-    try:
-        exec(f"import Games.{_}.{_} as {_}")
-        print(f'Loaded {_}')
-    except Exception as e:
-        print(f'Failed to load {_}\n{e}')
 
 
 
@@ -29,14 +21,13 @@ for _ in os.listdir('./Games'):
 
 # Constants
 
-casinoGames = ["Blackjack", "Poker", "Dice", "Slot Machine"]
+casinoGames = ["BlackJack", "Roulette", "Dice", "Slot Machine"]
 WINDOOW_WIDTH = 1000
 WINDOW_HEIGHT = 600
 MAX_LEVEL = 100
 
 
 # COLORS
-
 BACKGROUND_COLOR = "#1d1d1d" # dark gray  black
 SECONDARY_BACKGROUND_COLOR = "#f5f5f5" #rayish white
 FOREGROUND_COLOR = "#ffffff" # white
@@ -47,11 +38,12 @@ ACCENT_COLOR = "#6c0eed" # Purple
 FONT = 'Helvetica'
 
 
+
 # Initalize the client class ### Maybe allowing for multiplayer? only lan with ports?
 
 class Client:
 
-
+    
 
 
 
@@ -68,6 +60,9 @@ class Client:
         self.root.resizable(False, False)
         self.root.configure(background=BACKGROUND_COLOR)
         self.BOOT_TIP = False
+
+
+
 
 
     def _create_circle(self, x, y, r, **kwargs):
@@ -93,6 +88,40 @@ class Client:
         except OSError:
             pass
         return False
+
+    def launchGame(self, game):
+        try:
+            self.GameButton.configure(state="disabled", text=f'{game}\nNow Playing..')
+
+            self.gameWindow = tkinter.Toplevel(self.root)
+            self.gameWindow.title(game)
+            self.gameWindow.geometry("900x700")
+            self.gameWindow.resizable(False, False)
+            self.gameWindow.configure(background=BACKGROUND_COLOR)
+
+
+            def closeGame():
+                if tkinter.messagebox.askokcancel("Quit", "Are you sure you want to quit?"):
+                    self.gameWindow.destroy()
+                    self.GameButton.configure(state="normal", text=f'{game}')
+                
+            self.gameWindow.protocol("WM_DELETE_WINDOW", closeGame)
+
+
+
+
+
+      
+
+            eval(f'self.{game.split(" ")[0]}')
+
+
+
+            
+           
+        
+        except Exception as e:
+            print(f'Failed to launch game {game}\n{e}')
 
 
 
@@ -132,7 +161,7 @@ class Client:
         if isinstance(widget, tkinter.Entry):
             widget.configure(relief="solid", borderwidth=2, bg='#fff', fg='#000')
         for child in parent.winfo_children():
-            print(f'Child: {child}')
+            # print(f'Child: {child}')
             if child != widget and child.winfo_class() == "Entry":
                 child.configure(relief="groove", borderwidth=1, bg=BACKGROUND_COLOR, fg='#fff')
 
@@ -683,17 +712,71 @@ class Client:
         passwordEntry.bind("<Return>", lambda event: checkLogin(userNameEntry.get(), passwordEntry.get()))
         
 
+    def BlackJack(self):
+        print("black")
+
+    def Dice(self):
+        pass
+
+    def Roulette(self):
+        print("Routlette")
+
+    def Slot(self):
+        print("slots")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     # Function to create the main menu.
 
     def mainMenu(self):
 
 
         def flipGame(side):
-            index = casinoGames.index(GameButton.cget("text"))
+            index = casinoGames.index(self.GameButton.cget("text"))
             if side == "right":
-                GameButton.config(text=casinoGames [index + 1 if index < len(casinoGames) - 1 else -len(casinoGames)] )  
+                self.GameButton.config(text=casinoGames [index + 1 if index < len(casinoGames) - 1 else -len(casinoGames)] )  
             else:
-                GameButton.config(text=casinoGames [index - 1 if index > 0 else len(casinoGames) - 1] )
+                self.GameButton.config(text=casinoGames [index - 1 if index > 0 else len(casinoGames) - 1] )
 
 
         # Call getProfilePic for later
@@ -769,8 +852,8 @@ class Client:
         TipsFrame.columnconfigure(0, weight=1)
 
 
-        GameButton = tkinter.Button(self.mainMenuFrame, text=casinoGames[0], font=(FONT, 36), background='gray', justify='center', activebackground='gray', command=lambda: BlackJack.test(self))
-        GameButton.grid(row=1, column=1, sticky='nwes', )
+        self.GameButton = tkinter.Button(self.mainMenuFrame, text=casinoGames[0], font=(FONT, 36), background='gray', justify='center', activebackground='gray', command=lambda: self.launchGame(self.GameButton.cget("text")))
+        self.GameButton.grid(row=1, column=1, sticky='nwes', )
 
         self.mainMenuFrame.columnconfigure(0, weight=0)
         self.mainMenuFrame.columnconfigure(1, weight=5)
@@ -788,7 +871,7 @@ class Client:
         rightArrow.grid(row=1, column=2, sticky='nes', padx=(0,20))
 
 
-        HowToPlay = tkinter.Button(self.mainMenuFrame, text="How to Play", font=(FONT, 12), background=ACCENT_COLOR, foreground=FOREGROUND_COLOR, command=lambda: self.howToPlay(GameButton.cget('text')), activebackground=ACCENT_COLOR, activeforeground=FOREGROUND_COLOR)
+        HowToPlay = tkinter.Button(self.mainMenuFrame, text="How to Play", font=(FONT, 12), background=ACCENT_COLOR, foreground=FOREGROUND_COLOR, command=lambda: self.howToPlay(self.GameButton.cget('text')), activebackground=ACCENT_COLOR, activeforeground=FOREGROUND_COLOR)
         HowToPlay.grid(row=2, column=1, sticky='', )
 
 
@@ -867,7 +950,6 @@ class Client:
         if not self.testConnection():
             HowToPlay.config(state='disabled')
             self.warning(self.mainMenuFrame, "'How to Play' cannot work without a stable internet connection.\nPlease check your connection and relauch the game.", sticky='',columnspan=3, fontsize=16, row=2)
-
 
 
     # Func to start client. Starts auth first.
@@ -975,7 +1057,7 @@ h.run()
 #TODO: add how to play functionality -- # DONE
 #TODO: finish making the markdown files for all games -- # WOI
 #TODO: add check to see if theres network connection if not disable 'how to play button' -- # DONE
-#TODO: 
+#TODO: add LaunchGame function - generalised middle function for launching games -- # DONE
 #TODO: 
 #TODO: 
 #TODO: 
