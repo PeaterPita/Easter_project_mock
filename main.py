@@ -32,6 +32,7 @@ BACKGROUND_COLOR = "#1d1d1d" # dark gray  black
 SECONDARY_BACKGROUND_COLOR = "#f5f5f5" #rayish white
 FOREGROUND_COLOR = "#ffffff" # white
 ACCENT_COLOR = "#6c0eed" # Purple
+ROULETTE_COLOR = 'dark green' # dark green
 
 
 
@@ -95,9 +96,9 @@ class Client:
 
             self.gameWindow = tkinter.Toplevel(self.root)
             self.gameWindow.title(game)
-            self.gameWindow.geometry("900x700")
+            self.gameWindow.geometry("1200x700")
             self.gameWindow.resizable(False, False)
-            self.gameWindow.configure(background=BACKGROUND_COLOR)
+            self.gameWindow.configure(background=ROULETTE_COLOR)
 
 
             def closeGame():
@@ -113,7 +114,7 @@ class Client:
 
       
 
-            eval(f'self.{game.split(" ")[0]}')
+            eval(f'self.{game.split(" ")[0]}()')
 
 
 
@@ -712,13 +713,17 @@ class Client:
         passwordEntry.bind("<Return>", lambda event: checkLogin(userNameEntry.get(), passwordEntry.get()))
         
 
-    def BlackJack(self):
-        print("black")
+    def Roulette(self):
+
+        RED_CARD_COLOR = '#c10000'
+        BLACK_CARD_COLOR = 'black'
+
+        
 
     def Dice(self):
         pass
 
-    def Roulette(self):
+    def BlackJack(self):
         print("Routlette")
 
     def Slot(self):
@@ -995,7 +1000,7 @@ h.run()
 #TODO: Figure out what to put in sidebar white space - Tips? Leaderboard? -- # DONE
 #TODO: Look into multiplayer support. - Game is already kinda set up for it. Just need server and porting -- # DNTD
 #TODO: Actually make the casino games -- # IMP
-#TODO: Make game selection menu - Could do list of buttons or one button that changes. - Look at old casino for how to do that! -- # WOI
+#TODO: Make game selection menu - Could do list of buttons or one button that changes. - Look at old casino for how to do that! -- # DONE
 #TODO: Proper dev debug menu
 #TODO: Xp and Levling system. - wayy further done could unlock.. things? -- # WOI
 #TODO: Maybe figure out better way to update db specif items. Very slow atm with lots of seperate instances of opening
@@ -1058,13 +1063,13 @@ h.run()
 #TODO: finish making the markdown files for all games -- # WOI
 #TODO: add check to see if theres network connection if not disable 'how to play button' -- # DONE
 #TODO: add LaunchGame function - generalised middle function for launching games -- # DONE
-#TODO: 
-#TODO: 
-#TODO: 
-#TODO: 
-#TODO: 
-#TODO: 
-#TODO: 
+#TODO: find some way to use 2d array -- # DONE
+#TODO: sort out colors for roulette -- # DONE
+#TODO: fix numbers in wrong order on roulette -- # DONE
+#TODO: add proper borders to roulette -- # WOI
+#TODO: Add profile page
+#TODO: Add leaderboard / scoreboard
+#TODO: properly implement relative paths for images and data -- # WOI
 #TODO: 
 #TODO: 
 #TODO: 
@@ -1084,7 +1089,7 @@ h.run()
 # Lists - 2 -- # DONE
 # Functions - 2 -- # DONE
 
-# 2d Arrays - 3 
+# 2d Arrays - 3 -- # DONE
 # Parameters - 3 -- # DONE
 # Return Statments - 3 -- # DONE
 # Writing to Files/DataBase - 3 -- # DONE

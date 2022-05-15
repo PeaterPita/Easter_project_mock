@@ -31,16 +31,7 @@
     "username": "Bob",
     "password": "12345b",
     "lvl": 1,
-    "xp": 0,
-    "balance": 100,
-    "ProfilePicture": "images/users/default.jpg"
-  },
-  {
-    "UserID": 4,
-    "username": "test",
-    "password": "12345t",
-    "lvl": 1,
-    "xp": 0,
+    "xp": 150,
     "balance": 100,
     "ProfilePicture": "images/users/default.jpg"
   }
