@@ -26,6 +26,10 @@ WINDOOW_WIDTH = 1000
 WINDOW_HEIGHT = 600
 MAX_LEVEL = 100
 
+PATH = os.path.dirname(os.path.abspath(__file__))
+
+
+
 
 # COLORS
 BACKGROUND_COLOR = "#1d1d1d" # dark gray  black
@@ -72,14 +76,14 @@ class Client:
 
 
     def howToPlay(self, game):
-        with open(f'Games/{game.split(" ")[0]}/HTP.md', 'r') as f:
+        with open(os.path.join(PATH, f'Games\\{game.split(" ")[0]}\\HTP.md')) as f:
             html = markdown.markdown(f.read())
 
-        f = open('HTP.html', 'w')
+        f = open(os.path.join(PATH, 'HTP.html'), 'w')
         f.write(html)
         f.flush()
 
-        webbrowser.open('HTP.html')
+        webbrowser.open(os.path.join(PATH, 'HTP.html'))
 
     def testConnection(self):
         try:
@@ -142,7 +146,7 @@ class Client:
             profilePic = Image.open(self.userData['ProfilePicture'])
         except:
             print("Something went wrong when trying to get the profile picture. Restorted back to default")
-            profilePic = Image.open("images/default.jpg")
+            profilePic = Image.open(os.path.join(PATH, "images\\default.jpg"))
 
         pic = profilePic.resize((75,75), Image.ANTIALIAS)
         pic = ImageTk.PhotoImage(pic)
@@ -196,7 +200,7 @@ class Client:
         """saveChanges - Saves all the changes made from previous calls to the database. Also updates some text on the main menu
         """
 
-        with open('data\mydata.json', 'r+') as f:
+        with open(os.path.join(PATH,'data\\mydata.json'), 'r+') as f:
             data = json.load(f)
             for i, _ in enumerate(data):
                 if _['UserID'] == self.userData['UserID']:
@@ -266,7 +270,7 @@ class Client:
         
 
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
-            f = open('HTP.html', 'w')
+            f = open(os.path.join(PATH,'HTP.html'), 'w')
             f.write("")
             self.root.destroy()
 
@@ -418,7 +422,7 @@ class Client:
             # Check to make sure new username isnt already an account
 
             wantedUsername = currentUsernameEntry.get()
-            with open("data\mydata.json", 'r') as f:
+            with open(os.path.join(PATH,"data\\mydata.json"), 'r') as f:
                     for user in json.load(f):
                         if user['username'] == wantedUsername and user['username'] != self.userData['username']:
                             self.warning(self.settingsModal,"Account with that name already exists")
@@ -532,7 +536,7 @@ class Client:
             if not username or not password:
                 self.warning(self.logInModal, "Please fill in all fields")
             else:
-                with open("data\mydata.json", 'r') as f:
+                with open(os.path.join(PATH,"data\\mydata.json"), 'r') as f:
                     for user in json.load(f):
                         if user['username'] == username and user['password'] == password:
                             print("Found user")
@@ -569,12 +573,12 @@ class Client:
             elif not valResult[0]:
                 self.warning(self.logInModal, valResult[1])
             else:
-                with open("data\mydata.json", 'r') as f:
+                with open(os.path.join(PATH,"data\\mydata.json"), 'r') as f:
                     for user in json.load(f):
                         if user['username'] == username:
                             self.warning(self.logInModal,"Account with that name already exists")
                             return
-                    with open("data\mydata.json", 'r+') as f:
+                    with open(os.path.join(PATH,"data\\mydata.json"), 'r+') as f:
                         data = json.load(f)
                         print("LOADED")
                         print(f'DATA: {data}')
@@ -734,43 +738,6 @@ class Client:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     # Function to create the main menu.
 
     def mainMenu(self):
@@ -844,7 +811,7 @@ class Client:
 
         # Fetching a random tip from a json file, easy to add more.
 
-        with open("data\\tips.json", "r") as t:
+        with open(os.path.join(PATH,"data\\tips.json"), "r") as t:
             tip = json.load(t)
             tip = tip[str(random.randint(0, len(tip) - 1))] if not self.BOOT_TIP else tip["0"]
             
@@ -1004,7 +971,7 @@ h.run()
 #TODO: Proper dev debug menu
 #TODO: Xp and Levling system. - wayy further done could unlock.. things? -- # WOI
 #TODO: Maybe figure out better way to update db specif items. Very slow atm with lots of seperate instances of opening
-#TODO: Look into if python can connect to mongoDB -- # DONE -- will be too much work to transfer over now. Hopefully local json is good enough
+#TODO: Look into if python can connect to mongoDB -- # DNTD -- will be too much work to transfer over now. Hopefully local json is good enough
 #TODO: Make copy of userProfilePic in /images/backup incase pic is deleted from local disk -- # DNTD
 #TODO: Sort out all the fonts and sizes - some buttons still clipping -- # DONE
 #TODO: Find a suitable theme - do like the dark gray and white atm. Not very casino looking tho.
@@ -1063,13 +1030,13 @@ h.run()
 #TODO: finish making the markdown files for all games -- # WOI
 #TODO: add check to see if theres network connection if not disable 'how to play button' -- # DONE
 #TODO: add LaunchGame function - generalised middle function for launching games -- # DONE
-#TODO: find some way to use 2d array -- # DONE
-#TODO: sort out colors for roulette -- # DONE
-#TODO: fix numbers in wrong order on roulette -- # DONE
+#TODO: find some way to use 2d array -- 
+#TODO: sort out colors for roulette -- 
+#TODO: fix numbers in wrong order on roulette --
 #TODO: add proper borders to roulette -- # WOI
 #TODO: Add profile page
 #TODO: Add leaderboard / scoreboard
-#TODO: properly implement relative paths for images and data -- # WOI
+#TODO: properly implement relative paths for images and data -- # DONE
 #TODO: 
 #TODO: 
 #TODO: 
