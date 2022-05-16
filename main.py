@@ -36,7 +36,7 @@ BACKGROUND_COLOR = "#1d1d1d" # dark gray  black
 SECONDARY_BACKGROUND_COLOR = "#f5f5f5" #rayish white
 FOREGROUND_COLOR = "#ffffff" # white
 ACCENT_COLOR = "#6c0eed" # Purple
-ROULETTE_COLOR = 'dark green' # dark green
+TABLE_COLOR = 'dark green' # dark green
 
 
 
@@ -102,7 +102,7 @@ class Client:
             self.gameWindow.title(game)
             self.gameWindow.geometry("1200x700")
             self.gameWindow.resizable(False, False)
-            self.gameWindow.configure(background=ROULETTE_COLOR)
+            self.gameWindow.configure(background=TABLE_COLOR)
 
 
             def closeGame():
@@ -727,8 +727,209 @@ class Client:
     def Dice(self):
         pass
 
+
+
+
+
+
+
     def BlackJack(self):
-        print("Routlette")
+
+                # Dealer Hand, Player Hand
+        Hands = [     []     ,     []     ]
+        SUITS = ['hearts', 'diamonds', 'spades', 'clubs']
+        RANKS = ['ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king']
+
+        class Card():
+
+            def getCardImage(self, ):
+                if self.faceUp: 
+                    image = Image.open(os.path.join(PATH, f'images\\games\\Blackjack\\cards\\{self.rank}{self.suit}.gif'))
+                else:
+                    image = Image.open(os.path.join(PATH, f'images\\games\\Blackjack\\cards\\redback.gif'))
+
+                pic = image.resize((80,110), Image.ANTIALIAS)
+                pic = ImageTk.PhotoImage(pic)
+                
+
+                return pic
+
+            def flip(self):
+                self.faceUp = not self.faceUp
+                self.cardLabel.config(image=self.getCardImage())
+                self.cardLabel.image=self.getCardImage()
+
+            
+
+            def __init__(self, parent, suit, rank, col, row, faceUp=True, ):
+
+
+                self.suit = suit
+                self.rank = rank
+                self.faceUp = faceUp
+                self.col = col
+                self.row = row
+
+                self.cardImage = img = self.getCardImage()
+
+
+                self.cardLabel = tkinter.Label(parent, image=img, bg=BACKGROUND_COLOR)
+                self.cardLabel.image = self.cardImage
+                self.cardLabel.grid(row=self.row, column=self.col, sticky='nsew')
+
+                self.cardLabel.bind("<Button-1>", lambda event: self.flip())
+
+
+
+                
+
+
+
+
+
+
+
+
+
+                
+
+            def __str__(self):
+                if self.faceUp:
+                    return self.rank + ' of ' + self.suit
+                else:
+                    return 'XX'
+            
+            def value(self):
+                return (1, 11) if self.rank == 'ace' else int(self.rank) if len(self.rank) == 1 else 10
+
+
+
+
+            
+            
+
+
+
+
+
+
+
+        def getTotal(hand):
+            total = 0
+            for card in hand:
+                if not card.faceUp: 
+                    return f'{total} + ?'
+                total += card.value() if type(card.value()) == int else 1 if total + 11 > 21 else 11
+            return total
+
+        def clearBet():
+            for child in betFrame.winfo_children():
+                child.destroy()
+            betFrame.destroy()
+
+        def drawCard(hand, **kwargs):
+            Hands[hand].append(Card(tableFrame, random.choice(SUITS), random.choice(RANKS), len(Hands[hand]) if hand == 0 else 15 - len(Hands[hand]) , 5**hand, **kwargs))
+            
+        
+
+
+
+
+
+        def playGame(bet):
+            clearBet()
+
+            drawCard(0)
+            drawCard(0, faceUp=False)
+
+            drawCard(1)
+
+            dealerTot = tkinter.Label(tableFrame, text=f'Dealer: {getTotal(Hands[0])}', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12))
+            dealerTot.grid(row=2, column=0, sticky='nsw', pady=10, columnspan=2, padx=10)
+
+            playerTot = tkinter.Label(tableFrame, text=f'{self.userData["username"]} (you): {getTotal(Hands[1])}', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12))
+            playerTot.grid(row=4, column=12, sticky='nse', pady=10, columnspan=2, padx=10)
+
+            def hit():
+                drawCard(1)
+                playerTot.config(text=f'{self.userData["username"]} (you): {getTotal(Hands[1])}')
+            
+            hitButton = tkinter.Button(self.gameWindow, text='Hit', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12), command=hit)
+            hitButton.grid(row=1, column=0, sticky='nswe', pady=10, padx=(30,10))
+
+            standButton = tkinter.Button(self.gameWindow, text='Stand', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12), command=lambda: print('stand'))
+            standButton.grid(row=1, column=1, sticky='nswe', pady=10, padx=(10,30))
+
+
+
+
+
+        def checkBet(bet):
+            try:
+                bet = int(bet)
+                if bet > self.userData['balance']:
+                    self.warning(betFrame, "Bet too high",)
+                    return False
+                else:
+                    playGame(bet)
+            except ValueError:
+                self.warning(betFrame, "Bet must be a integer amount") 
+
+
+
+
+        tableFrame = tkinter.Frame(self.gameWindow, bg=BACKGROUND_COLOR)
+        tableFrame.grid(row=0, column=0, sticky='nsew', padx=30, pady=30, columnspan=2)
+
+        self.gameWindow.rowconfigure(0, weight=7)
+        self.gameWindow.rowconfigure(1, weight=1)
+        self.gameWindow.columnconfigure(0, weight=1)
+
+        
+        tableFrame.rowconfigure(3, weight=1)
+        tableFrame.columnconfigure(6, weight=1)
+
+
+
+        
+            
+        # def test():
+
+        #     Hands[0].append(Card(tableFrame, 'hearts', 'ace', 0, 0,))
+        #     Hands[0].append( Card(tableFrame, 'spades', 'king', 1, 0, faceUp=False, ))
+        
+        #     Hands[1].append(Card(tableFrame, 'diamonds', '2', 13, 5))
+        #     Hands[1].append(Card(tableFrame, 'clubs', '7', 12, 5) )       
+
+
+
+
+        
+        
+
+        
+
+
+
+
+        betFrame = tkinter.Frame(tableFrame, bg=BACKGROUND_COLOR, borderwidth=1, relief='solid')
+        betFrame.grid(row=3, column=6, pady=10)
+
+        tkinter.Label(betFrame, text='How much do you want to bet?', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12)).grid(row=0, column=0, sticky='nesw', padx=10, columnspan=2)
+        tkinter.Label(betFrame, text=f'Avaliable Chips:', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12)).grid(row=1, column=0, sticky='sw', padx=10)
+        tkinter.Label(betFrame, text=f'{self.userData["balance"]}', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12)).grid(row=2, column=0, sticky='nswe', padx=10)
+
+        tkinter.Label(betFrame, text='Your bet:', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12)).grid(row=1, column=1, sticky='nesw', padx=10)
+        betEntry = tkinter.Entry(betFrame, width=10, font=(FONT, 12))
+        betEntry.grid(row=2, column=1, sticky='nes', padx=10)
+
+        betButton = tkinter.Button(betFrame, text='Bet', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12), command=lambda: checkBet(betEntry.get()))
+        betButton.grid(row=3, column=0, sticky='nesw', padx=10, columnspan=2)
+
+
+
+
+
 
     def Slot(self):
         print("slots")
