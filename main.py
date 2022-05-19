@@ -95,6 +95,7 @@ class Client:
         return False
 
     def launchGame(self, game):
+        self.game = game
         try:
             self.GameButton.configure(state="disabled", text=f'{game}\nNow Playing..')
 
@@ -106,7 +107,7 @@ class Client:
 
 
             def closeGame():
-                if tkinter.messagebox.askokcancel("Quit", "Are you sure you want to quit?"):
+                if tkinter.messagebox.askokcancel("Quit", "Are you sure you want to quit? Game progress wont be saved"):
                     self.gameWindow.destroy()
                     self.GameButton.configure(state="normal", text=f'{game}')
                 
@@ -222,6 +223,7 @@ class Client:
                 # Try to update username text on main menu
 
                 self.userNameLabel.config(text=f'Welcome, \n {self.userData["username"] }' )
+                self.chipCounter.config(text=f'Chips: {self.userData["balance"]}')
 
 
                 # Try to update profile pic on main menu
@@ -756,8 +758,10 @@ class Client:
 
             def flip(self):
                 self.faceUp = not self.faceUp
-                self.cardLabel.config(image=self.getCardImage())
-                self.cardLabel.image=self.getCardImage()
+
+                self.cardImage = img = self.getCardImage()
+                self.cardLabel.config(image=img)
+                self.cardLabel.image= self.cardImage
 
             
 
@@ -802,7 +806,27 @@ class Client:
             def value(self):
                 return (1, 11) if self.rank == 'ace' else int(self.rank) if len(self.rank) == 1 else 10
 
+        def endGame(ogBet, winAmount):
 
+            self.hitButton.config(state='disabled')
+            self.standButton.config(state='disabled')
+
+
+            self.userData["balance"] = self.userData["balance"] - ogBet + winAmount
+            self.saveChanges()
+
+
+
+
+
+
+            closeMessage = messagebox.showinfo('Game Closing' ,f'You have {"won" if winAmount > 0 else "lost"} {winAmount if winAmount > 0 else winAmount + ogBet} chips.')
+           
+
+
+
+            self.gameWindow.destroy()
+            self.GameButton.configure(state="normal", text=f'{self.game}')
 
 
             
@@ -827,22 +851,52 @@ class Client:
                 child.destroy()
             betFrame.destroy()
 
+        def clearTable():
+            for child in self.gameWindow.winfo_children():
+                child.destroy()
+
         def drawCard(hand, **kwargs):
             Hands[hand].append(Card(tableFrame, random.choice(SUITS), random.choice(RANKS), len(Hands[hand]) if hand == 0 else 15 - len(Hands[hand]) , 5**hand, **kwargs))
             
-        
+        def ifNat(hand):
+            tot = 0
+            for card in hand:
+                tot += card.value() if type(card.value()) == int else 1 if tot + 11 > 21 else 11
+            if tot == 21:
+                return True, hand
+            elif tot > 21:
+                return "bust", hand
+            else:
+                return False, hand
 
-
+        def workOutWhoWon(bet):
+            if getTotal(Hands[0]) > getTotal(Hands[1]):
+                self.warning(tableFrame, "The dealer was closer to 21. They win", row=3, sticky='nsew', fontsize=45,columnspan=15)
+                endGame(bet, 0)
+            elif getTotal(Hands[0]) < getTotal(Hands[1]):
+                self.warning(tableFrame, "You were closer to 21. You win", row=3, sticky='nsew', fontsize=45, columnspan=15)
+                endGame(bet, bet*2)
+            else:
+                pass
+                endgame(bet, 0)
+                
 
 
 
         def playGame(bet):
+            self.amountWon = bet
+
             clearBet()
 
             drawCard(0)
             drawCard(0, faceUp=False)
 
             drawCard(1)
+            drawCard(1)
+
+            # Hands[1].append(Card(tableFrame, 'clubs', 'ace', len(Hands[1]) if 1 == 0 else 15 - len(Hands[1]) , 5**1,))
+            # Hands[1].append(Card(tableFrame, 'hearts', 'king', len(Hands[1]) if 1 == 0 else 15 - len(Hands[1]) , 5**1, ))
+
 
             dealerTot = tkinter.Label(tableFrame, text=f'Dealer: {getTotal(Hands[0])}', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12))
             dealerTot.grid(row=2, column=0, sticky='nsw', pady=10, columnspan=2, padx=10)
@@ -850,15 +904,59 @@ class Client:
             playerTot = tkinter.Label(tableFrame, text=f'{self.userData["username"]} (you): {getTotal(Hands[1])}', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12))
             playerTot.grid(row=4, column=12, sticky='nse', pady=10, columnspan=2, padx=10)
 
+            if ifNat(Hands[0])[0] and ifNat(Hands[1])[0]:
+
+                endGame(bet, self.amountWon)
+            elif ifNat(Hands[0])[0]:
+                endGame(bet, 0)
+            elif ifNat(Hands[1])[0]:
+                endGame(bet, self.amountWon * 1.5) 
+
+
+
+
+
             def hit():
                 drawCard(1)
                 playerTot.config(text=f'{self.userData["username"]} (you): {getTotal(Hands[1])}')
+                if getTotal(Hands[1]) > 21:
+                    self.warning(tableFrame, f"Bust\nYou had a total of {getTotal(Hands[1])}", row=3, sticky='nsew', fontsize=45,columnspan=15)
+                    endGame(bet, 0)
             
-            hitButton = tkinter.Button(self.gameWindow, text='Hit', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12), command=hit)
-            hitButton.grid(row=1, column=0, sticky='nswe', pady=10, padx=(30,10))
 
-            standButton = tkinter.Button(self.gameWindow, text='Stand', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12), command=lambda: print('stand'))
-            standButton.grid(row=1, column=1, sticky='nswe', pady=10, padx=(10,30))
+            
+            
+            self.hitButton = tkinter.Button(self.gameWindow, text='Hit', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12), command=hit)
+            self.hitButton.grid(row=1, column=0, sticky='nswe', pady=10, padx=(30,10))
+
+
+
+
+            def startStand():
+                Hands[0][1].flip()
+                stand()
+
+
+            def stand():
+                newTot = getTotal(Hands[0])
+                dealerTot.config(text=f'Dealer: {newTot}')
+
+                if newTot > 21:
+                    self.warning(tableFrame, "Dealer Busted", row=3, sticky='nsew', fontsize=45,columnspan=15)
+                    endGame(bet, self.amountWon * 2)
+                elif newTot <= 16:
+                    drawCard(0)
+                    stand()
+                else:
+                    workOutWhoWon(bet)
+
+
+
+
+
+
+            self.standButton = tkinter.Button(self.gameWindow, text='Stand', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12), command=lambda: startStand())
+            self.standButton.grid(row=1, column=1, sticky='nswe', pady=10, padx=(10,30))
 
 
 
@@ -892,15 +990,7 @@ class Client:
 
 
         
-            
-        # def test():
-
-        #     Hands[0].append(Card(tableFrame, 'hearts', 'ace', 0, 0,))
-        #     Hands[0].append( Card(tableFrame, 'spades', 'king', 1, 0, faceUp=False, ))
-        
-        #     Hands[1].append(Card(tableFrame, 'diamonds', '2', 13, 5))
-        #     Hands[1].append(Card(tableFrame, 'clubs', '7', 12, 5) )       
-
+       
 
 
 
@@ -920,10 +1010,10 @@ class Client:
         tkinter.Label(betFrame, text=f'{self.userData["balance"]}', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12)).grid(row=2, column=0, sticky='nswe', padx=10)
 
         tkinter.Label(betFrame, text='Your bet:', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12)).grid(row=1, column=1, sticky='nesw', padx=10)
-        betEntry = tkinter.Entry(betFrame, width=10, font=(FONT, 12))
-        betEntry.grid(row=2, column=1, sticky='nes', padx=10)
+        self.betEntry = tkinter.Entry(betFrame, width=10, font=(FONT, 12))
+        self.betEntry.grid(row=2, column=1, sticky='nes', padx=10)
 
-        betButton = tkinter.Button(betFrame, text='Bet', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12), command=lambda: checkBet(betEntry.get()))
+        betButton = tkinter.Button(betFrame, text='Bet', bg=BACKGROUND_COLOR, fg='#fff', font=(FONT, 12), command=lambda: checkBet(self.betEntry.get()))
         betButton.grid(row=3, column=0, sticky='nesw', padx=10, columnspan=2)
 
 
@@ -1234,10 +1324,21 @@ h.run()
 #TODO: find some way to use 2d array -- 
 #TODO: sort out colors for roulette -- 
 #TODO: fix numbers in wrong order on roulette --
-#TODO: add proper borders to roulette -- # WOI
+#TODO: add proper borders to roulette -- 
 #TODO: Add profile page
 #TODO: Add leaderboard / scoreboard
 #TODO: properly implement relative paths for images and data -- # DONE
+#TODO: Add check for nat wins -- # DONE
+#TODO: add warning message telling user why they won/lost -- # DONE
+#TODO: create card class -- # DONE
+#TODO: fix cards disappearing when flipped -- # DONE // gargabe collection problem
+#TODO: add test code to clip card once clicked -- # DONE
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
+#TODO: 
 #TODO: 
 #TODO: 
 #TODO: 

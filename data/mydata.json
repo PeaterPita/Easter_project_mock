@@ -1,38 +1,38 @@
 [
-  {
-    "UserID": 0,
-    "username": "admin",
-    "password": "123",
-    "lvl": 100,
-    "xp": 0,
-    "balance": 999,
-    "ProfilePicture": "C:/Users/peter/Documents/Code/Python/Easter_project_mock/images/users/MMLogo2.png"
-  },
-  {
-    "UserID": 1,
-    "username": "Max",
-    "password": "maxiscool123",
-    "lvl": 1,
-    "xp": 0,
-    "balance": 43,
-    "ProfilePicture": "C:/Users/peter/Documents/Code/Python/Easter_project_mock/images/users/profilePic1.jpg"
-  },
-  {
-    "UserID": 2,
-    "username": "Katie",
-    "password": "qwerty",
-    "lvl": 1,
-    "xp": 0,
-    "balance": 580,
-    "ProfilePicture": "C:/Users/peter/Documents/Code/Python/Easter_project_mock/images/users/profilePic5.jpg"
-  },
-  {
-    "UserID": 3,
-    "username": "Bob",
-    "password": "12345b",
-    "lvl": 1,
-    "xp": 150,
-    "balance": 100,
-    "ProfilePicture": "images/users/default.jpg"
-  }
+    {
+        "UserID": 0,
+        "username": "admin",
+        "password": "123",
+        "lvl": 100,
+        "xp": 0,
+        "balance": 1570.5,
+        "ProfilePicture": "C:/Users/peter/Documents/Code/Python/Easter_project_mock/images/users/MMLogo2.png"
+    },
+    {
+        "UserID": 1,
+        "username": "Max",
+        "password": "maxiscool123",
+        "lvl": 1,
+        "xp": 0,
+        "balance": 43,
+        "ProfilePicture": "C:/Users/peter/Documents/Code/Python/Easter_project_mock/images/users/profilePic1.jpg"
+    },
+    {
+        "UserID": 2,
+        "username": "Katie",
+        "password": "qwerty",
+        "lvl": 1,
+        "xp": 0,
+        "balance": 580,
+        "ProfilePicture": "C:/Users/peter/Documents/Code/Python/Easter_project_mock/images/users/profilePic5.jpg"
+    },
+    {
+        "UserID": 3,
+        "username": "Bob",
+        "password": "12345b",
+        "lvl": 1,
+        "xp": 150,
+        "balance": 100,
+        "ProfilePicture": "images/users/default.jpg"
+    }
 ]
